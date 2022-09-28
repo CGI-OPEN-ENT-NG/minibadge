@@ -22,7 +22,7 @@ interface IMinibadgeScope extends IScope {
 class Controller implements ng.IController, ViewModel {
 
     subscriptions: Subscription = new Subscription();
-    badgeGiven : BadgeAssigned[];
+    badgeGiven : BadgeAssigned[] = [];
     constructor(private $scope: IMinibadgeScope,
                 private $location: ILocationService,
                 private iBadgesGivenService:IBadgesGivenService) {
@@ -30,10 +30,10 @@ class Controller implements ng.IController, ViewModel {
     }
 
     $onInit() {
-        this.iBadgesGivenService.getBadgeGiven().then((data: BadgeAssigned[]) => {
+        this.iBadgesGivenService.getBadgeGiven().then(
+            (data: BadgeAssigned[]) => {
                 if (data && data.length > 0) {
                     this.badgeGiven.push(...data);
-                    console.log(this.badgeGiven)
                 }
                 safeApply(this.$scope);
             }

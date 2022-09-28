@@ -3,6 +3,7 @@ package fr.cgi.minibadge.controller;
 import fr.cgi.minibadge.core.constants.Database;
 import fr.cgi.minibadge.core.constants.Field;
 import fr.cgi.minibadge.core.constants.Request;
+import fr.cgi.minibadge.model.Model;
 import fr.cgi.minibadge.security.UsersAssignRight;
 import fr.cgi.minibadge.service.BadgeAssignedService;
 import fr.cgi.minibadge.service.ServiceFactory;
@@ -20,6 +21,7 @@ import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.user.UserUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BadgeAssignedController extends ControllerHelper {
 
@@ -32,19 +34,14 @@ public class BadgeAssignedController extends ControllerHelper {
     @Get("/assigned/given")
     @ApiDoc("get all the badge the user has given")
     public void get(HttpServerRequest request){
-        JsonArray ja = new JsonArray();
-        JsonObject jo =  new JsonObject();
-        jo.put("id",1)
-                .put("assignorId","assigneur")
-                .put("badgeId",2)
-                .put("created","test");
-        ja.add(jo);
-        ja.add(jo);
-        ja.add(jo);
-        ja.add(jo);
-        ja.add(jo);
-        ja.add(jo);
-        renderJson(request, ja);
+        UserUtils.getUserInfos(eb, request, user -> badgeAssignedService.getBadgesGiven(user.getUserId())
+                .onSuccess(badges -> {
+                            log.info(badges.size());
+                            renderJson(request, new JsonObject()
+                                    .put(Request.ALL, new JsonArray(badges.stream().map(Model::toJson).collect(Collectors.toList()))));
+                        }
+                )
+                .onFailure(err -> renderError(request, new JsonObject().put(Request.MESSAGE, err.getMessage()))));
     }
 
     @Post("/types/:typeId/assign")
