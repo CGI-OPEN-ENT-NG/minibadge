@@ -59,37 +59,6 @@ public class DefaultBadgeService implements BadgeService {
                 String.format("[Minibadge@%s::createBadgesRequest] Fail to create badges",
                         this.getClass().getSimpleName()))));
 
-        badgesPromise.future()
-                .onSuccess(badgeTypes -> promise.complete())
-                .onFailure(promise::fail);
-
-        return promise.future();
-    }
-
-    @Override
-    public Future<List<Badge>> getBadges(String structureId, String ownerId) {
-        Promise<List<Badge>> promise = Promise.promise();
-        String request = String.format("SELECT b.id, b.structure_id, b.owner_id, b.badge_type_id, " +
-                        " bt.label as badge_type_label, bt.picture_id as badge_type_picture_id, " +
-                        " (SELECT COUNT(DISTINCT ba.id) FROM %s ba  WHERE ba.badge_id = b.id) as count_assigned " +
-                        " FROM %s b INNER JOIN %s bt ON b.badge_type_id = bt.id " +
-                        " WHERE b.owner_id = ? AND b.structure_id = ?",
-                DefaultBadgeAssignedService.BADGE_ASSIGNED_VALID_TABLE, BADGE_TABLE,
-                DefaultBadgeTypeService.BADGE_TYPE_TABLE);
-
-        JsonArray params = new JsonArray()
-                .add(ownerId)
-                .add(structureId);
-
-        Promise<JsonArray> badgesPromise = Promise.promise();
-        sql.prepared(request, params, SqlResult.validResultHandler(PromiseHelper.handler(badgesPromise,
-                String.format("[Minibadge@%s::getBadges] Fail to retrieve badges",
-                        this.getClass().getSimpleName()))));
-
-        badgesPromise.future()
-                .onSuccess(badges -> promise.complete(new Badge().toList(badges)))
-                .onFailure(promise::fail);
-
         return promise.future();
     }
 

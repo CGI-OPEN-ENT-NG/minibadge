@@ -1,13 +1,14 @@
 import {Behaviours, ng, notify} from 'entcore';
 
-import {IBadgeTypeService} from "../services";
+import {IBadgesGivenService, IBadgeTypeService} from "../services";
 import {BadgeType} from "../models/badge-type.model";
 import {safeApply} from "../utils/safe-apply.utils";
 import {AxiosError} from "axios";
 import {MINIBADGE_APP} from "../minibadgeBehaviours";
-import {IScope} from "angular";
+import {ILocationService, IScope} from "angular";
 import {Setting} from "../models/setting.model";
 import {Subscription} from "rxjs";
+import {BadgeAssigned} from "../models/badge-assigned.model";
 
 
 interface ViewModel {
@@ -21,12 +22,22 @@ interface IMinibadgeScope extends IScope {
 class Controller implements ng.IController, ViewModel {
 
     subscriptions: Subscription = new Subscription();
-
-    constructor(private $scope: IMinibadgeScope) {
+    badgeGiven : BadgeAssigned[];
+    constructor(private $scope: IMinibadgeScope,
+                private $location: ILocationService,
+                private iBadgesGivenService:IBadgesGivenService) {
         this.$scope.vm = this;
     }
 
     $onInit() {
+        this.iBadgesGivenService.getBadgeGiven().then((data: BadgeAssigned[]) => {
+                if (data && data.length > 0) {
+                    this.badgeGiven.push(...data);
+                    console.log(this.badgeGiven)
+                }
+                safeApply(this.$scope);
+            }
+        );
     }
 
 
@@ -36,4 +47,4 @@ class Controller implements ng.IController, ViewModel {
 }
 
 export const badgesGivenController = ng.controller('BadgesGivenController',
-    ['$scope', '$route', 'BadgesGivenService', Controller]);
+    ['$scope', '$location', 'BadgesGivenService', Controller]);
