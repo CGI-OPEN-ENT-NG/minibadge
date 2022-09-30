@@ -4,21 +4,23 @@ import fr.cgi.minibadge.Minibadge;
 import fr.cgi.minibadge.core.constants.Database;
 import fr.cgi.minibadge.core.constants.Field;
 import fr.cgi.minibadge.helper.PromiseHelper;
-import fr.cgi.minibadge.helper.SqlHelper;
 import fr.cgi.minibadge.model.BadgeAssigned;
-import fr.cgi.minibadge.model.BadgeType;
+import fr.cgi.minibadge.model.User;
 import fr.cgi.minibadge.service.BadgeAssignedService;
 import fr.cgi.minibadge.service.BadgeService;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
+import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import org.entcore.common.sql.Sql;
 import org.entcore.common.sql.SqlResult;
 import org.entcore.common.user.UserInfos;
+import org.entcore.common.user.UserUtils;
 
-import javax.xml.crypto.Data;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static fr.cgi.minibadge.service.impl.DefaultBadgeService.BADGE_TABLE;
 import static fr.cgi.minibadge.service.impl.DefaultBadgeTypeService.BADGE_TYPE_TABLE;
@@ -47,12 +49,56 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
     }
 
     @Override
-    public Future<List<BadgeAssigned>> getBadgesGiven(String assignorId) {
+    public Future<List<BadgeAssigned>> getBadgesGiven(EventBus eb, String query, String assignorId) {
         Promise<List<BadgeAssigned>> promise = Promise.promise();
         getBadgesGivenRequest(assignorId)
-                .onSuccess(badgesGiven -> promise.complete(new BadgeAssigned().toList(badgesGiven)))
+                .onSuccess(badgesGiven -> {
+                    List<Future<Void>> futures = new ArrayList<>();
+                    Promise<Void> init = Promise.promise();
+                    Future<Void> current = init.future();
+                    List<BadgeAssigned> badgeAssignedList =  new BadgeAssigned().toList(badgesGiven);
+                    for (int i = 0; i < badgeAssignedList.size(); i++) {
+                        int finalI = i;
+                        current = current.compose(v -> {
+                            Future<Void> next = getOwnerId(eb, badgeAssignedList.get(finalI));
+                            futures.add(next);
+                            return next;
+                        });
+                    }
+                    current.onSuccess(event -> {
+                        List<BadgeAssigned> finalBadgeAssignedList = badgeAssignedList;
+                        if(query != null && !query.isEmpty())
+                            finalBadgeAssignedList = badgeAssignedList.stream().filter(badgeAssigned ->
+                                badgeAssigned.getBadge().owner().getFirstName().contains(query.toLowerCase())
+                               || badgeAssigned.getBadge().owner().getLastName().toLowerCase().contains(query.toLowerCase())
+                               || badgeAssigned.getBadge().getBadgeType().label().toLowerCase().contains(query.toLowerCase())).collect(Collectors.toList());
+
+                        promise.complete(finalBadgeAssignedList);
+                    });
+                    current.onFailure(event ->{
+                        event.printStackTrace();
+                        promise.fail(event.getMessage());
+                    });
+                    init.complete();
+                })
+
                 .onFailure(promise::fail);
 
+        return promise.future();
+    }
+
+    Future<Void> getOwnerId(EventBus eb, BadgeAssigned badgeAssigned){
+        Promise<Void> promise = Promise.promise();
+        UserUtils.getUserInfos(eb, badgeAssigned.getBadge().ownerId(), userInfos ->{
+            JsonObject userJson = new JsonObject();
+            userJson.put(Field.ID,userInfos.getUserId())
+                    .put(Field.FIRSTNAME,userInfos.getFirstName())
+                    .put(Field.LASTNAME,userInfos.getLastName());
+            User user = new User(userJson);
+            badgeAssigned.getBadge().setOwner(user);
+                    promise.complete();
+                }
+        );
         return promise.future();
     }
 
@@ -62,7 +108,8 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
         JsonArray params = new JsonArray();
         params.add(assignorId);
 
-        String request = "SELECT ba.id, ba.badge_id, ba.assignor_id, ba.accepted_at, ba.revoked_at, ba.updated_at, ba.created_at , bt.picture_id , bt.label" +
+        String request = "SELECT ba.id, ba.badge_id, ba.assignor_id, ba.accepted_at, ba.revoked_at, ba.updated_at, ba.created_at , bt.picture_id ," +
+                " bt.label , badge.owner_id " +
                 ", badge.id as " + Field.BADGE_ID+ " , bt.id as  " + Field.BADGE_TYPE_ID +
                 " FROM " + BADGE_ASSIGNED_TABLE +" as ba " +
                 " INNER JOIN " + BADGE_TABLE +" " +

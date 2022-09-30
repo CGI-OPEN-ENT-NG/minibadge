@@ -14,6 +14,7 @@ import {BadgeAssigned} from "../models/badge-assigned.model";
 interface ViewModel {
 }
 
+
 interface IMinibadgeScope extends IScope {
     vm: ViewModel;
     setting: Setting;
@@ -22,7 +23,12 @@ interface IMinibadgeScope extends IScope {
 class Controller implements ng.IController, ViewModel {
 
     subscriptions: Subscription = new Subscription();
-    badgeGiven : BadgeAssigned[] = [];
+    badgesGiven : BadgeAssigned[];
+    payload = {
+        query: ""
+    };
+    searchQuery: string;
+
     constructor(private $scope: IMinibadgeScope,
                 private $location: ILocationService,
                 private iBadgesGivenService:IBadgesGivenService) {
@@ -30,17 +36,22 @@ class Controller implements ng.IController, ViewModel {
     }
 
     $onInit() {
-        this.iBadgesGivenService.getBadgeGiven().then(
+        this.initBadgeGiven();
+    }
+
+
+    private initBadgeGiven() {
+        this.badgesGiven = [];
+        this.payload.query = this.searchQuery;
+        this.iBadgesGivenService.getBadgeGiven(this.payload).then(
             (data: BadgeAssigned[]) => {
                 if (data && data.length > 0) {
-                    this.badgeGiven.push(...data);
+                    this.badgesGiven.push(...data);
                 }
                 safeApply(this.$scope);
             }
         );
     }
-
-
 
     $onDestroy() {
     }

@@ -2,6 +2,7 @@ package fr.cgi.minibadge.service;
 
 import fr.cgi.minibadge.model.BadgeAssigned;
 import io.vertx.core.Future;
+import io.vertx.core.eventbus.EventBus;
 import org.entcore.common.user.UserInfos;
 
 import java.util.List;
@@ -17,5 +18,5 @@ public interface BadgeAssignedService {
      */
     Future<Void> assign(long typeId, List<String> ownerIds, UserInfos assignor);
 
-    Future<List<BadgeAssigned>> getBadgesGiven(String assignorId);
+    Future<List<BadgeAssigned>> getBadgesGiven(EventBus eb, String query, String assignorId);
 }

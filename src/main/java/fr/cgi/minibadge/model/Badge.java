@@ -16,6 +16,11 @@ public class Badge implements Model<Badge> {
     private String disabledAt;
     private User owner;
     private BadgeCounts badgeCounts;
+
+    public BadgeType getBadgeType() {
+        return badgeType;
+    }
+
     private BadgeType badgeType;
 
     public Badge() {

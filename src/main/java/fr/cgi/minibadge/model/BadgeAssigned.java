@@ -22,13 +22,14 @@ public class BadgeAssigned implements Model<BadgeAssigned>{
     }
 
 
-    public Badge setBadge(Long idBadge, Long idBadgeType,String typeLabel, String pictureId) {
+    public Badge setBadge(Long idBadge, Long idBadgeType, String typeLabel, String pictureId, String ownerId) {
         return new Badge(
                 new JsonObject()
                         .put(Field.ID, idBadge)
                         .put(Field.BADGE_TYPE_ID,idBadgeType)
                         .put(Field.BADGE_TYPE_LABEL, typeLabel)
                         .put(Field.BADGE_TYPE_PICTURE_ID, pictureId)
+                        .put(Field.OWNER_ID,ownerId)
         );
     }
     @Override
@@ -48,7 +49,9 @@ public class BadgeAssigned implements Model<BadgeAssigned>{
                 badgeAssigned.getLong(Field.BADGE_ID,badgeAssigned.getLong(Field.BADGEID)) ,
                 badgeAssigned.getLong(Field.BADGE_TYPE_ID,badgeAssigned.getLong(Field.BADGETYPEID)),
                 badgeAssigned.getString(Field.LABEL),
-                badgeAssigned.getString(Field.PICTURE_ID,badgeAssigned.getString(Field.PICTUREID))
+                badgeAssigned.getString(Field.PICTURE_ID,badgeAssigned.getString(Field.PICTUREID)),
+                badgeAssigned.getString(Field.OWNER_ID,badgeAssigned.getString(Field.OWNERID)
+                        )
                 );
         return this;
     }
