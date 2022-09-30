@@ -1,10 +1,10 @@
 import {ng} from 'entcore';
 import http, {AxiosResponse} from 'axios';
-import {BadgeAssigned} from "../models/badge-assigned.model";
+import {BadgeAssigned, IBadgeGivenPayload} from "../models/badge-assigned.model";
 import {IBadgeTypesResponses} from "../models/badge-type.model";
 
 export interface IBadgesGivenService {
-    getBadgeGiven(): Promise<BadgeAssigned[]>;
+    getBadgeGiven(payload:IBadgeGivenPayload): Promise<BadgeAssigned[]>;
 }
 
 export const badgesGivenService: IBadgesGivenService = {
@@ -14,8 +14,8 @@ export const badgesGivenService: IBadgesGivenService = {
      *
      * @param typeId badge type identifier
      */
-    getBadgeGiven: async (): Promise<BadgeAssigned[]> =>
-        http.get(`/minibadge/assigned/given`)
+    getBadgeGiven: async (payload:IBadgeGivenPayload): Promise<BadgeAssigned[]> =>
+        http.get(`/minibadge/assigned/given${payload.query ? `?query=${payload.query}` : ''}`)
             .then((res: AxiosResponse) => {
                 let badgeTypesResponses: IBadgeTypesResponses = res.data;
                 return new BadgeAssigned().toList(badgeTypesResponses ? badgeTypesResponses.all : []);

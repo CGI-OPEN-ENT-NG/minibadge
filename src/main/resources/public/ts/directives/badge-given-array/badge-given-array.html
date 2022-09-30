@@ -1,0 +1,21 @@
+<div>
+    <div class="flex-row align-center"  ng-repeat="badgeGiven in vm.badgesGiven">
+        <div class="flex-row flex-one justify-center" >
+            <img ng-src="/minibadge/public/img/[[badgeGiven.badge.badgeType.pictureId]]" />
+        </div>
+        <div class="flex-row flex-one justify-center " >
+            [[badgeGiven.badge.badgeType.label]]
+        </div>
+        <div class="flex-row flex-one justify-center" >
+            [[badgeGiven.badge.owner.firstName]] - [[badgeGiven.badge.owner.lastName]]
+
+
+        </div>
+        <div class="flex-row flex-one justify-center given-array-elem">
+            [[badgeGiven.createdAt]]
+        </div>
+        <div class="flex-row flex-one justify-center" >
+           [[badgeGiven.revokedAt !== null]]
+        </div>
+    </div>
+</div>

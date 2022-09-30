@@ -34,9 +34,9 @@ public class BadgeAssignedController extends ControllerHelper {
     @Get("/assigned/given")
     @ApiDoc("get all the badge the user has given")
     public void get(HttpServerRequest request){
-        UserUtils.getUserInfos(eb, request, user -> badgeAssignedService.getBadgesGiven(user.getUserId())
+        String query = request.params().get(Request.QUERY);
+        UserUtils.getUserInfos(eb, request, user -> badgeAssignedService.getBadgesGiven(eb,query,user.getUserId())
                 .onSuccess(badges -> {
-                            log.info(badges.size());
                             renderJson(request, new JsonObject()
                                     .put(Request.ALL, new JsonArray(badges.stream().map(Model::toJson).collect(Collectors.toList()))));
                         }
