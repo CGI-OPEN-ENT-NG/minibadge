@@ -1,4 +1,4 @@
-import {IPaginatedResponses} from "./request.model";
+import {ILimitOffsetPayload, IPaginatedResponses, IQueryStringPayload} from "./request.model";
 import {BadgeType, IBadgeTypeResponse} from "./badge-type.model";
 import {IUserResponse, User} from "./user.model";
 import {MinibadgeModel} from "./model";

@@ -7,6 +7,21 @@ export interface IBadgesGivenService {
     getBadgeGiven(payload:IBadgeGivenPayload): Promise<BadgeAssigned[]>;
 }
 
+function getParams(payload: IBadgeGivenPayload) {
+    let params ="";
+    if(payload.query){
+        params += `?query=${payload.query}`
+        if(payload.startDate && payload.endDate){
+            params += `&startDate=${payload.startDate}&endDate=${payload.endDate}`
+        }
+    }else{
+        if(payload.startDate && payload.endDate){
+            params += `?startDate=${payload.startDate}&endDate=${payload.endDate}`
+        }
+    }
+    return params;
+}
+
 export const badgesGivenService: IBadgesGivenService = {
 
     /**
@@ -15,7 +30,7 @@ export const badgesGivenService: IBadgesGivenService = {
      * @param typeId badge type identifier
      */
     getBadgeGiven: async (payload:IBadgeGivenPayload): Promise<BadgeAssigned[]> =>
-        http.get(`/minibadge/assigned/given${payload.query ? `?query=${payload.query}` : ''}`)
+        http.get(`/minibadge/assigned/given${getParams(payload)}`)
             .then((res: AxiosResponse) => {
                 let badgeTypesResponses: IBadgeTypesResponses = res.data;
                 return new BadgeAssigned().toList(badgeTypesResponses ? badgeTypesResponses.all : []);

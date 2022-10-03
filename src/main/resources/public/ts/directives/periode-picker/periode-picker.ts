@@ -1,19 +1,28 @@
-import {ng} from "entcore";
+import {ng,idiom as lang} from "entcore";
 import {IDirective, ILocationService, IScope, IWindowService} from "angular";
 import {RootsConst} from "../../core/constants/roots.const";
-import {BadgeType} from "../../models/badge-type.model";
+import {safeApply} from "../../utils/safe-apply.utils";
 
 interface IViewModel {
+    lang: typeof lang
+}
+
+interface IDirectiveProperties {
+    onChange(): void;
+    date: Date;
+    label: string;
 }
 
 interface IMinibadgeScope extends IScope {
-    vm: IViewModel;
+    vm: IDirectiveProperties;
 }
 
 class Controller implements ng.IController, IViewModel {
+    lang: typeof lang;
     constructor(private $scope: IMinibadgeScope,
                 private $location: ILocationService,
                 private $window: IWindowService) {
+        this.lang = lang;
     }
 
     $onInit() {
@@ -21,7 +30,6 @@ class Controller implements ng.IController, IViewModel {
 
     $onDestroy() {
     }
-
 }
 
 function directive(): IDirective {
@@ -30,6 +38,9 @@ function directive(): IDirective {
         restrict: 'E',
         templateUrl: `${RootsConst.directive}/periode-picker/periode-picker.html`,
         scope: {
+            date:"=",
+            label:"=",
+            onChange:"&"
         },
         controllerAs: 'vm',
         bindToController: true,

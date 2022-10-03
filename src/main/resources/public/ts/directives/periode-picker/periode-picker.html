@@ -1,8 +1,9 @@
-<div class="">
-    <h3>
-        <i18n>minibadge.periode.date.from</i18n>
-    </h3>
-    <h3>
-        <i18n>minibadge.periode.date.to</i18n>
-    </h3>
+<div class="flex">
+    <div>
+        <label>[[vm.lang.translate(vm.label)]]
+            <input type="date"
+                   ng-model="vm.date"
+                   ng-change = "vm.onChange()">
+        </label>
+    </div>
 </div>

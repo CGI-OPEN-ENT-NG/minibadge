@@ -11,6 +11,8 @@ public class Request {
     public static final String STATUS = "status";
     public static final String RESULT = "result";
     public static final String RESULTS = "results";
+    public static final String START_DATE = "startDate";
+    public static final String END_DATE = "endDate";
 
     private Request() {
         throw new IllegalStateException("Utility class");
