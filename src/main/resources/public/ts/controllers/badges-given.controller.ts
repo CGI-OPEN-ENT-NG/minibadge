@@ -1,4 +1,4 @@
-import {Behaviours, ng, notify} from 'entcore';
+import {Behaviours, moment, ng, notify} from 'entcore';
 
 import {IBadgesGivenService, IBadgeTypeService} from "../services";
 import {BadgeType} from "../models/badge-type.model";
@@ -9,6 +9,7 @@ import {ILocationService, IScope} from "angular";
 import {Setting} from "../models/setting.model";
 import {Subscription} from "rxjs";
 import {BadgeAssigned} from "../models/badge-assigned.model";
+import {DATE_FORMAT} from "../core/enum/date.enum";
 
 
 interface ViewModel {
@@ -25,13 +26,23 @@ class Controller implements ng.IController, ViewModel {
     subscriptions: Subscription = new Subscription();
     badgesGiven : BadgeAssigned[];
     payload = {
-        query: ""
+        query: "",
+        startDate:"",
+        endDate:""
     };
+    startDate: Date;
+    endDate: Date;
+    labelTo:string
+    labelFrom:string
     searchQuery: string;
 
     constructor(private $scope: IMinibadgeScope,
                 private $location: ILocationService,
-                private iBadgesGivenService:IBadgesGivenService) {
+                private BadgesGivenService:IBadgesGivenService) {
+        this.endDate = new Date();
+        this.startDate = moment().subtract('months', 1).toDate();
+        this.labelTo = "minibadge.periode.date.to";
+        this.labelFrom =  "minibadge.periode.date.from";
         this.$scope.vm = this;
     }
 
@@ -40,10 +51,16 @@ class Controller implements ng.IController, ViewModel {
     }
 
 
-    private initBadgeGiven() {
+    private async initBadgeGiven() {
+        //need to wait directives changes
+        await safeApply(this.$scope)
         this.badgesGiven = [];
         this.payload.query = this.searchQuery;
-        this.iBadgesGivenService.getBadgeGiven(this.payload).then(
+        if(this.startDate && this.endDate){
+            this.payload.startDate = moment(this.startDate).format(DATE_FORMAT.DAY_MONTH_YEAR_MOMENT);
+            this.payload.endDate = moment(this.endDate).format(DATE_FORMAT.DAY_MONTH_YEAR_MOMENT);
+        }
+        await this.BadgesGivenService.getBadgeGiven(this.payload).then(
             (data: BadgeAssigned[]) => {
                 if (data && data.length > 0) {
                     this.badgesGiven.push(...data);

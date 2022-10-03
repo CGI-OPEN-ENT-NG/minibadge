@@ -18,5 +18,5 @@ public interface BadgeAssignedService {
      */
     Future<Void> assign(long typeId, List<String> ownerIds, UserInfos assignor);
 
-    Future<List<BadgeAssigned>> getBadgesGiven(EventBus eb, String query, String assignorId);
+    Future<List<BadgeAssigned>> getBadgesGiven(EventBus eb, String query,String startDate, String endDate, String assignorId);
 }

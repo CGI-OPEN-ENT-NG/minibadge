@@ -1,9 +1,11 @@
 import {ng} from "entcore";
 import {IDirective, ILocationService, IScope, IWindowService} from "angular";
 import {RootsConst} from "../../core/constants/roots.const";
-import {BadgeType} from "../../models/badge-type.model";
+import {DATE_FORMAT} from "../../core/enum/date.enum";
+
 
 interface IViewModel {
+    DATE_FORMAT: typeof DATE_FORMAT;
 }
 
 interface IMinibadgeScope extends IScope {
@@ -11,9 +13,11 @@ interface IMinibadgeScope extends IScope {
 }
 
 class Controller implements ng.IController, IViewModel {
+    DATE_FORMAT: typeof DATE_FORMAT;
     constructor(private $scope: IMinibadgeScope,
                 private $location: ILocationService,
                 private $window: IWindowService) {
+        this.DATE_FORMAT = DATE_FORMAT;
     }
 
     $onInit() {

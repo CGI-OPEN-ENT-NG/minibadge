@@ -8,6 +8,8 @@ export interface IBadgeAssignedPayload {
     ownerIds: string[];
 }
 export interface IBadgeGivenPayload extends IQueryStringPayload {
+    startDate:string,
+    endDate:string
 }
 export interface IBadgeAssignedResponse {
     id : number;

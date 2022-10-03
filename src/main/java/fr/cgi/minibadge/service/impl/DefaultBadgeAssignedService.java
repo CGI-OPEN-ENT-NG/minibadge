@@ -49,9 +49,9 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
     }
 
     @Override
-    public Future<List<BadgeAssigned>> getBadgesGiven(EventBus eb, String query, String assignorId) {
+    public Future<List<BadgeAssigned>> getBadgesGiven(EventBus eb, String query,String startDate, String endDate, String assignorId) {
         Promise<List<BadgeAssigned>> promise = Promise.promise();
-        getBadgesGivenRequest(assignorId)
+        getBadgesGivenRequest(assignorId, startDate, endDate)
                 .onSuccess(badgesGiven -> {
                     List<Future<Void>> futures = new ArrayList<>();
                     Promise<Void> init = Promise.promise();
@@ -69,9 +69,9 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
                         List<BadgeAssigned> finalBadgeAssignedList = badgeAssignedList;
                         if(query != null && !query.isEmpty())
                             finalBadgeAssignedList = badgeAssignedList.stream().filter(badgeAssigned ->
-                                badgeAssigned.getBadge().owner().getFirstName().contains(query.toLowerCase())
-                               || badgeAssigned.getBadge().owner().getLastName().toLowerCase().contains(query.toLowerCase())
-                               || badgeAssigned.getBadge().getBadgeType().label().toLowerCase().contains(query.toLowerCase())).collect(Collectors.toList());
+                                    badgeAssigned.getBadge().owner().getFirstName().contains(query.toLowerCase())
+                                            || badgeAssigned.getBadge().owner().getLastName().toLowerCase().contains(query.toLowerCase())
+                                            || badgeAssigned.getBadge().getBadgeType().label().toLowerCase().contains(query.toLowerCase())).collect(Collectors.toList());
 
                         promise.complete(finalBadgeAssignedList);
                     });
@@ -81,7 +81,6 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
                     });
                     init.complete();
                 })
-
                 .onFailure(promise::fail);
 
         return promise.future();
@@ -90,23 +89,27 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
     Future<Void> getOwnerId(EventBus eb, BadgeAssigned badgeAssigned){
         Promise<Void> promise = Promise.promise();
         UserUtils.getUserInfos(eb, badgeAssigned.getBadge().ownerId(), userInfos ->{
-            JsonObject userJson = new JsonObject();
-            userJson.put(Field.ID,userInfos.getUserId())
-                    .put(Field.FIRSTNAME,userInfos.getFirstName())
-                    .put(Field.LASTNAME,userInfos.getLastName());
-            User user = new User(userJson);
-            badgeAssigned.getBadge().setOwner(user);
+                    JsonObject userJson = new JsonObject();
+                    userJson.put(Field.ID,userInfos.getUserId())
+                            .put(Field.FIRSTNAME,userInfos.getFirstName())
+                            .put(Field.LASTNAME,userInfos.getLastName());
+                    User user = new User(userJson);
+                    badgeAssigned.getBadge().setOwner(user);
                     promise.complete();
                 }
         );
         return promise.future();
     }
 
-    private Future<JsonArray> getBadgesGivenRequest(String assignorId) {
+    private Future<JsonArray> getBadgesGivenRequest(String assignorId, String startDate, String endDate) {
         Promise<JsonArray> promise = Promise.promise();
 
         JsonArray params = new JsonArray();
         params.add(assignorId);
+        if(startDate != null && endDate != null){
+            params.add(startDate);
+            params.add(endDate);
+        }
 
         String request = "SELECT ba.id, ba.badge_id, ba.assignor_id, ba.accepted_at, ba.revoked_at, ba.updated_at, ba.created_at , bt.picture_id ," +
                 " bt.label , badge.owner_id " +
@@ -117,6 +120,8 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
                 " INNER JOIN " + BADGE_TYPE_TABLE +" as bt " +
                 " on badge.badge_type_id = bt.id" +
                 " WHERE ba.assignor_id = ? " +
+                    ((startDate != null && endDate != null)? " AND ba.created_at  >= to_date(?,'DD-MM-YYYY') " +
+                            " AND ba.created_at  <= to_date(?,'DD-MM-YYYY') " : "" ) +
                 " ; ";
 
 

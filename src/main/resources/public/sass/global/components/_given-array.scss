@@ -1,4 +1,8 @@
-
+.given-array{
+  &.-head{
+    background-color: #4bafd5;
+  }
+}
 .given-array-elem{
   height: 100%;
   -ms-flex-align: center;

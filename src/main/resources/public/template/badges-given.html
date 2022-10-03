@@ -2,8 +2,16 @@
     <h2>
         <i18n>minibadge.badges.given</i18n>
     </h2>
-    <minibadge-periode-picker>
-
+    <minibadge-periode-picker
+            label="vm.labelFrom"
+            date="vm.startDate"
+            on-change="vm.initBadgeGiven()">
+    </minibadge-periode-picker>
+    <minibadge-periode-picker
+            label="vm.labelTo"
+            date="vm.endDate"
+            on-change="vm.initBadgeGiven()"
+    >
     </minibadge-periode-picker>
     <search-input search-query="vm.searchQuery" on-search="vm.initBadgeGiven()" placeholder="minibadge.badge.search"></search-input>
     <minibadge-badge-given-array badges-given="vm.badgesGiven">

@@ -1,9 +1,21 @@
-<div>
+<div class="given-array">
+    <div class="flex-row align-center given-array-head" >
+        <div class="flex-row flex-one justify-center " >
+            <i18n>label</i18n>
+        </div>
+        <div class="flex-row flex-one justify-center" >
+            <i18n>name</i18n>
+        </div>
+        <div class="flex-row flex-one justify-center">
+            <i18n>date</i18n>
+        </div>
+        <div class="flex-row flex-one justify-center" >
+            <i18n>revoked</i18n>
+        </div>
+    </div>
     <div class="flex-row align-center"  ng-repeat="badgeGiven in vm.badgesGiven">
         <div class="flex-row flex-one justify-center" >
             <img ng-src="/minibadge/public/img/[[badgeGiven.badge.badgeType.pictureId]]" />
-        </div>
-        <div class="flex-row flex-one justify-center " >
             [[badgeGiven.badge.badgeType.label]]
         </div>
         <div class="flex-row flex-one justify-center" >
@@ -12,10 +24,12 @@
 
         </div>
         <div class="flex-row flex-one justify-center given-array-elem">
-            [[badgeGiven.createdAt]]
+            <span ng-bind="badgeGiven.createdAt | date:vm.DATE_FORMAT.DAY_MONTH_YEAR_KEBAB"></span>
         </div>
         <div class="flex-row flex-one justify-center" >
-           [[badgeGiven.revokedAt !== null]]
+            <span ng-show="badgeGiven.revokedAt"><i18n>minibadge.revoked</i18n></span>
+            <span ng-show="!badgeGiven.revokedAt"><i18n>minibadge.not.revoked</i18n></span>
+
         </div>
     </div>
 </div>
