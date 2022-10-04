@@ -1,10 +1,19 @@
 .given-array{
-  &.-head{
+  background-color: white;
+  padding: 1em;
+  &-head{
     background-color: #4bafd5;
+    color: white;
+    justify-content: space-between;
   }
-}
-.given-array-elem{
-  height: 100%;
-  -ms-flex-align: center;
-  align-items: center;
+  &-row{
+   border-bottom: 1px solid lightgrey;
+    justify-content: space-between;
+  }
+  &-img{
+    padding-right: 1em;
+  }
+  &-cell{
+    padding: 1em;
+  }
 }
