@@ -1,9 +1,10 @@
-<div class="flex">
-    <div>
-        <label>[[vm.lang.translate(vm.label)]]
-            <input type="date"
-                   ng-model="vm.date"
-                   ng-change = "vm.onChange()">
-        </label>
+    <div class="periode-picker-container">
+        <label>[[vm.lang.translate(vm.label)]]</label>
+        <input type="date"
+               class="periode-picker-input"
+               ng-model="vm.date"
+               ng-change = "vm.onChange()">
+        <span class="periode-picker-open-button">
+      <span ><i class=" calendar-month"></i></span>
+    </span>
     </div>
-</div>

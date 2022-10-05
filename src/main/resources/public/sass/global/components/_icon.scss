@@ -1,4 +1,8 @@
 i {
+  &.calendar-month{
+    font-family: 'material-icons';
+    content: "\FDFA";
+  }
   &.calendar-range::before {
     font-family: 'material-icons';
     content: "\F678";
