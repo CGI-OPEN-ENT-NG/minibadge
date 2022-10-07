@@ -41,8 +41,7 @@
         </div>
         <div class="given-array-cell flex-row flex-one justify-center" >
             <span ng-show="badgeGiven.revokedAt"><i18n>minibadge.revoked</i18n></span>
-            <span ng-show="!badgeGiven.revokedAt"><i18n>minibadge.not.revoked</i18n></span>
-
+            <span ng-click="vm.deleteFunction({badgeGiven:badgeGiven})"><i class="given-array-trash"></i></span>
         </div>
     </div>
 </div>

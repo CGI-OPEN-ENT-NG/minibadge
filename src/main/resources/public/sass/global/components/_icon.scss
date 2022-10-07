@@ -7,6 +7,10 @@ i {
     font-family: 'material-icons';
     content: "\F678";
   }
+  &.trash::before{
+    font-family: "material-icons";
+    content: "\FA79";
+  }
   &.sort-arrow-up::before{
     font-family: 'material-icons';
     content: "\F4BC";

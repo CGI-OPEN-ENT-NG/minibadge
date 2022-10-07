@@ -1,10 +1,12 @@
 import {ng} from 'entcore';
-import http, {AxiosResponse} from 'axios';
+import http, {AxiosPromise, AxiosResponse} from 'axios';
 import {BadgeAssigned, IBadgeGivenPayload} from "../models/badge-assigned.model";
 import {IBadgeTypesResponses} from "../models/badge-type.model";
 
 export interface IBadgesGivenService {
     getBadgeGiven(payload: IBadgeGivenPayload): Promise<BadgeAssigned[]>;
+
+    revokeBadgeGiven(badgeGiven: BadgeAssigned): Promise<AxiosResponse>;
 }
 
 

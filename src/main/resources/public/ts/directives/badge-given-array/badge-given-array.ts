@@ -16,7 +16,7 @@ interface IViewModel {
 
 interface IDirectiveProperties {
     filterFunction?({filterType: string, filterAsc: boolean}): void;
-
+    deleteFunction({badgeGiven:BadgeAssigned});
     badgesGiven: BadgeAssigned[];
 }
 
@@ -60,6 +60,7 @@ function directive(): IDirective {
         scope: {
             badgesGiven: '=',
             filterFunction: '&',
+            deleteFunction:'&'
         },
         controllerAs: 'vm',
         bindToController: true,
