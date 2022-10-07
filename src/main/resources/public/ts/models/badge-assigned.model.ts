@@ -9,7 +9,10 @@ export interface IBadgeAssignedPayload {
 }
 export interface IBadgeGivenPayload extends IQueryStringPayload {
     startDate:string,
-    endDate:string
+    endDate:string,
+    sortType:string,
+    sortAsc:boolean
+
 }
 export interface IBadgeAssignedResponse {
     id : number;

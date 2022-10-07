@@ -7,6 +7,15 @@ i {
     font-family: 'material-icons';
     content: "\F678";
   }
+  &.sort-arrow-up::before{
+    font-family: 'material-icons';
+    content: "\F4BC";
+
+  }
+  &.sort-arrow-down::before{
+    font-family: 'material-icons';
+    content: "\F4BD";
+  }
 
   &.user-circle::before {
     font-family: 'material-icons';
