@@ -14,9 +14,19 @@ function getParams(payload: IBadgeGivenPayload) {
         if(payload.startDate && payload.endDate){
             params += `&startDate=${payload.startDate}&endDate=${payload.endDate}`
         }
+        if(payload.sortType && payload.sortType !== "" && payload.sortAsc!== undefined){
+            params += `&sortBy=${payload.sortType}&sortAsc=${payload.sortAsc}`
+        }
     }else{
         if(payload.startDate && payload.endDate){
             params += `?startDate=${payload.startDate}&endDate=${payload.endDate}`
+            if(payload.sortType && payload.sortType !== "" && payload.sortAsc!== undefined){
+                params += `&sortBy=${payload.sortType}&sortAsc=${payload.sortAsc}`
+            }
+        }else{
+            if(payload.sortType && payload.sortType !== "" && payload.sortAsc!== undefined){
+                params += `?sortBy=${payload.sortType}&sortAsc=${payload.sortAsc}`
+            }
         }
     }
     return params;

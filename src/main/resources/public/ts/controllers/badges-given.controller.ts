@@ -1,4 +1,4 @@
-import {Behaviours, moment, ng, notify} from 'entcore';
+import {Behaviours, moment, ng,idiom as lang, notify} from 'entcore';
 
 import {IBadgesGivenService, IBadgeTypeService} from "../services";
 import {BadgeType} from "../models/badge-type.model";
@@ -24,26 +24,36 @@ interface IMinibadgeScope extends IScope {
 class Controller implements ng.IController, ViewModel {
 
     subscriptions: Subscription = new Subscription();
-    badgesGiven : BadgeAssigned[];
+    badgesGiven: BadgeAssigned[];
     payload = {
         query: "",
-        startDate:"",
-        endDate:""
+        startDate: "",
+        endDate: "",
+        sortType: "",
+        sortAsc: true,
     };
     startDate: Date;
     endDate: Date;
-    labelTo:string
-    labelFrom:string
+    labelTo: string
+    labelFrom: string
     searchQuery: string;
 
     constructor(private $scope: IMinibadgeScope,
                 private $location: ILocationService,
-                private BadgesGivenService:IBadgesGivenService) {
+                private BadgesGivenService: IBadgesGivenService) {
         this.endDate = new Date();
         this.startDate = moment().subtract('months', 1).toDate();
         this.labelTo = "minibadge.periode.date.to";
-        this.labelFrom =  "minibadge.periode.date.from";
+        this.labelFrom = "minibadge.periode.date.from";
         this.$scope.vm = this;
+    }
+
+    filterBadges = async (sortLabel: string, isAsc: boolean) => {
+        //need to wait directives changes
+        await safeApply(this.$scope);
+        this.payload.sortType = lang.translate(sortLabel);
+        this.payload.sortAsc = isAsc;
+        this.initBadgeGiven();
     }
 
     $onInit() {
@@ -56,7 +66,7 @@ class Controller implements ng.IController, ViewModel {
         await safeApply(this.$scope)
         this.badgesGiven = [];
         this.payload.query = this.searchQuery;
-        if(this.startDate && this.endDate){
+        if (this.startDate && this.endDate) {
             this.payload.startDate = moment(this.startDate).format(DATE_FORMAT.DAY_MONTH_YEAR_MOMENT);
             this.payload.endDate = moment(this.endDate).format(DATE_FORMAT.DAY_MONTH_YEAR_MOMENT);
         }

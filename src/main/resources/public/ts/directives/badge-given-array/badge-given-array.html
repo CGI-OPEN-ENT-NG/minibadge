@@ -1,16 +1,25 @@
 <div class="given-array">
     <div class="flex-row align-center given-array-head" >
-        <div class="given-array-cell flex-row flex-one justify-center " >
+        <div class="given-array-cell flex-row flex-one justify-center " ng-click="vm.onClick('minibadge.given.sort.label')" >
             <i18n>minibadge.given.array.label</i18n>
+            <i ng-show="vm.isAsc  && vm.label === 'minibadge.given.sort.label'"  class="sort-arrow-down"></i>
+            <i  ng-show="!vm.isAsc  && vm.label === 'minibadge.given.sort.label'" class="sort-arrow-up"></i>
         </div>
-        <div class="given-array-cell flex-row flex-one  justify-center" >
+        <div class="given-array-cell flex-row flex-one  justify-center"   >
             <i18n>minibadge.given.array.owner</i18n>
         </div>
-        <div class="given-array-cell flex-row flex-one  justify-center">
+        <div class="mobile-disabled given-array-cell flex-row flex-one  justify-center" ng-click="vm.onClick('minibadge.given.sort.date')" >
             <i18n>minibadge.given.array.date</i18n>
+
+            <i ng-show="vm.isAsc  && vm.label === 'minibadge.given.sort.date'"  class="sort-arrow-down"></i>
+            <i  ng-show="!vm.isAsc  && vm.label === 'minibadge.given.sort.date'" class="sort-arrow-up"></i>
         </div>
-        <div class="given-array-cell flex-row flex-one  justify-center" >
+        <div class="given-array-cell flex-row flex-one  justify-center"  ng-click="vm.onClick('minibadge.given.sort.revoked')" >
             <i18n>minibadge.given.array.revoked</i18n>
+
+
+            <i ng-show="vm.isAsc && vm.label === 'minibadge.given.sort.revoked'"  class="sort-arrow-down"></i>
+            <i  ng-show="!vm.isAsc  && vm.label === 'minibadge.given.sort.revoked'" class="sort-arrow-up"></i>
         </div>
     </div>
     <div class="given-array-row flex-row align-center"  ng-repeat="badgeGiven in vm.badgesGiven">
@@ -23,7 +32,7 @@
             </div>
         </div>
         <div class="given-array-cell flex-row flex-one justify-center" >
-            [[badgeGiven.badge.owner.firstName]] - [[badgeGiven.badge.owner.lastName]]
+            [[badgeGiven.badge.owner.firstName]] [[badgeGiven.badge.owner.lastName]]
 
 
         </div>

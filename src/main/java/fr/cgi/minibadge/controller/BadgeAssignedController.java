@@ -31,13 +31,16 @@ public class BadgeAssignedController extends ControllerHelper {
         super();
         this.badgeAssignedService = serviceFactory.badgeAssignedService();
     }
+
     @Get("/assigned/given")
     @ApiDoc("get all the badge the user has given")
-    public void get(HttpServerRequest request){
+    public void get(HttpServerRequest request) {
         String query = request.params().get(Request.QUERY);
         String startDate = request.params().get(Request.START_DATE);
         String endDate = request.params().get(Request.END_DATE);
-        UserUtils.getUserInfos(eb, request, user -> badgeAssignedService.getBadgesGiven(eb,query,startDate,endDate,user.getUserId())
+        String sortType = request.params().get(Request.SORT_BY);
+        Boolean sortAsc = Boolean.parseBoolean(request.params().get(Request.SORT_ASC));
+        UserUtils.getUserInfos(eb, request, user -> badgeAssignedService.getBadgesGiven(eb, query, startDate, endDate, sortType, sortAsc, user.getUserId())
                 .onSuccess(badges -> {
                             renderJson(request, new JsonObject()
                                     .put(Request.ALL, new JsonArray(badges.stream().map(Model::toJson).collect(Collectors.toList()))));
