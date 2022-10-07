@@ -1,23 +1,34 @@
-.given-array{
+.given-array {
   background-color: white;
   padding: 1em;
-  &-head{
+  border-radius: 10px;
+
+  & i {
+    margin: 0 1%;
+    font-size: 1.3em;
+  }
+
+  &-head {
     background-color: #4bafd5;
     color: white;
     justify-content: space-between;
   }
-  &-row{
-   border-bottom: 1px solid lightgrey;
+
+  &-row {
+    border-top: 1px solid lightgrey;
     justify-content: space-between;
   }
-  &-img{
+
+  &-img {
     padding-right: 1em;
-    max-width:85%;
+    max-width: 85%;
   }
-  &-img img{
-    max-width:85%;
+
+  &-img img {
+    max-width: 85%;
   }
-  &-cell{
+
+  &-cell {
     padding: 1em;
   }
 }

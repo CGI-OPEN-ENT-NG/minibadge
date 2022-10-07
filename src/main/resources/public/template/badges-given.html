@@ -15,9 +15,12 @@
         >
         </minibadge-periode-picker>
 
-        <search-input search-query="vm.searchQuery" class="badge-given-search" on-search="vm.initBadgeGiven()" placeholder="minibadge.badge.search"></search-input>
+        <search-input search-query="vm.searchQuery" class="badge-given-search mobile-disabled" on-search="vm.initBadgeGiven()"
+                      placeholder="minibadge.badge.given.search"></search-input>
     </div>
-    <minibadge-badge-given-array badges-given="vm.badgesGiven">
+    <minibadge-badge-given-array badges-given="vm.badgesGiven"
+                                 filter-function="vm.filterBadges(filterType, filterAsc)"
+                                 >
 
     </minibadge-badge-given-array>
 </div>
