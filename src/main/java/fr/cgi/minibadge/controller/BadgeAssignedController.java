@@ -3,12 +3,14 @@ package fr.cgi.minibadge.controller;
 import fr.cgi.minibadge.core.constants.Database;
 import fr.cgi.minibadge.core.constants.Field;
 import fr.cgi.minibadge.core.constants.Request;
+import fr.cgi.minibadge.model.BadgeAssigned;
 import fr.cgi.minibadge.model.Model;
 import fr.cgi.minibadge.service.BadgeAssignedService;
 import fr.cgi.minibadge.service.ServiceFactory;
 import fr.wseduc.rs.ApiDoc;
 import fr.wseduc.rs.Get;
 import fr.wseduc.rs.Post;
+import fr.wseduc.rs.Put;
 import fr.wseduc.webutils.request.RequestUtils;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonArray;
@@ -26,6 +28,18 @@ public class BadgeAssignedController extends ControllerHelper {
     public BadgeAssignedController(ServiceFactory serviceFactory) {
         super();
         this.badgeAssignedService = serviceFactory.badgeAssignedService();
+    }
+
+    @Put("/revoked/given/:idBadge")
+    @ApiDoc("get all the badge the user has given")
+    public void revoke(HttpServerRequest request){
+        long idBadge = Long.parseLong(request.params().get(Database.IDBADGE));
+        badgeAssignedService.revoke(idBadge).onSuccess(event -> {
+            request.response().setStatusCode(200).end();
+        }).onFailure(error->{
+            badRequest(request, error.getMessage());
+        });
+
     }
 
     @Get("/assigned/given")

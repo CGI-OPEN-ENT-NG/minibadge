@@ -5,6 +5,7 @@ import {DATE_FORMAT} from "../../core/enum/date.enum";
 import {BadgeType} from "../../models/badge-type.model";
 import {CARD_FOOTER} from "../../core/enum/card-footers.enum";
 import {BadgeAssigned} from "../../models/badge-assigned.model";
+import {safeApply} from "../../utils/safe-apply.utils";
 
 
 interface IViewModel {
@@ -18,6 +19,7 @@ interface IDirectiveProperties {
     filterFunction?({filterType: string, filterAsc: boolean}): void;
     deleteFunction({badgeGiven:BadgeAssigned});
     badgesGiven: BadgeAssigned[];
+    isOpenLightbox:boolean;
 }
 
 interface IMinibadgeScope extends IScope {
@@ -28,12 +30,13 @@ class Controller implements ng.IController, IViewModel {
     DATE_FORMAT: typeof DATE_FORMAT;
     isAsc: boolean;
     label: string;
-
+    isOpenLightbox:boolean;
     constructor(private $scope: IMinibadgeScope,
                 private $location: ILocationService,
                 private $window: IWindowService) {
         this.DATE_FORMAT = DATE_FORMAT;
         this.isAsc = true;
+        this.isOpenLightbox = false
     }
 
     $onInit() {
@@ -41,8 +44,17 @@ class Controller implements ng.IController, IViewModel {
 
     $onDestroy() {
     }
+    openRevokeLightbox = (badgeGiven:BadgeAssigned) => {
+        this.isOpenLightbox = true;
+        safeApply(this);
+    }
 
+    onValidLightbox=() =>{
+        // vm.deleteFunction({badgeGiven:badgeGiven})
+    }
     onClick = (filterLabel: string) => {
+        this.isOpenLightbox = true
+        safeApply(this)
         if (isFunction(this.$scope.vm.filterFunction)) {
             this.label === filterLabel ? this.isAsc = !this.isAsc : this.isAsc = true
             this.label = filterLabel;

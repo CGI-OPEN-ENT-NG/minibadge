@@ -101,6 +101,22 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
         );
         return promise.future();
     }
+    @Override
+    public Future<JsonArray> revoke(long badgeId) {
+        Promise<JsonArray> promise = Promise.promise();
+
+        JsonArray params = new JsonArray();
+        params.add(badgeId);
+
+        String request = "UPDATE " + BADGE_ASSIGNED_TABLE +
+                " SET revoked_at = NOW ()"+
+                " WHERE id = ?; ";
+
+        sql.prepared(request, params, SqlResult.validResultHandler(PromiseHelper.handler(promise,
+                String.format("[Minibadge@%s::getBadgesTypesRequest] Fail to revoke badge",
+                        this.getClass().getSimpleName()))));
+        return promise.future();
+    }
 
     private Future<JsonArray> getBadgesGivenRequest(String assignorId, String startDate, String endDate, String sortBy, Boolean sortAsc) {
         Promise<JsonArray> promise = Promise.promise();

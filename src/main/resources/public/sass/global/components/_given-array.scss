@@ -31,4 +31,14 @@
   &-cell {
     padding: 1em;
   }
+
+  &-trash{
+    font-size: 1.5em;
+    color: $minibadge-orange;
+  }
+
+  &-revoked{
+    font-weight: bold;
+    color: $minibadge-red;
+  }
 }
