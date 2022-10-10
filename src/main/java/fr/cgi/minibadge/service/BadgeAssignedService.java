@@ -11,12 +11,24 @@ public interface BadgeAssignedService {
     /**
      * Create badge assigned with badge creation if not exists
      *
-     * @param typeId type identifier
+     * @param typeId   type identifier
      * @param ownerIds list of badge owners identifier
      * @param assignor user that is assigning
      * @return return future
      */
     Future<Void> assign(long typeId, List<String> ownerIds, UserInfos assignor);
 
-    Future<List<BadgeAssigned>> getBadgesGiven(EventBus eb, String query,String startDate, String endDate,String sortType,Boolean sortAsc, String assignorId);
+    /**
+     * Get All the badges the user have given
+     *
+     * @param eb         EventBus
+     * @param query      filters
+     * @param startDate  Start Date
+     * @param endDate    End Date
+     * @param sortType   column sorted
+     * @param sortAsc    sort Asc
+     * @param assignorId user id who give the badges
+     * @return return future
+     */
+    Future<List<BadgeAssigned>> getBadgesGiven(EventBus eb, String query, String startDate, String endDate, String sortType, Boolean sortAsc, String assignorId);
 }

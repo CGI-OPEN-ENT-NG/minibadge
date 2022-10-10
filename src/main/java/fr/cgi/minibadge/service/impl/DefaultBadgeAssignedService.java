@@ -19,6 +19,7 @@ import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,46 +49,45 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
         return promise.future();
     }
 
+    Future<List<BadgeAssigned>> setUserInfos(EventBus eb, List<BadgeAssigned> badgeAssignedList) {
+        Promise<List<BadgeAssigned>> promise = Promise.promise();
+        Future<Void> current = Future.succeededFuture();
+        for (BadgeAssigned badgeAssigned: badgeAssignedList) {
+            current = current.compose(v -> setOwner(eb, badgeAssigned));
+
+        }
+        current
+                .onSuccess(res -> promise.complete(badgeAssignedList))
+                .onFailure(promise::fail);
+        return promise.future();
+    }
+
     @Override
     public Future<List<BadgeAssigned>> getBadgesGiven(EventBus eb, String query, String startDate, String endDate, String sortBy,
                                                       Boolean sortAsc, String assignorId) {
         Promise<List<BadgeAssigned>> promise = Promise.promise();
         getBadgesGivenRequest(assignorId, startDate, endDate, sortBy, sortAsc)
-                .onSuccess(badgesGiven -> {
-                    List<Future<Void>> futures = new ArrayList<>();
-                    Promise<Void> init = Promise.promise();
-                    Future<Void> current = init.future();
-                    List<BadgeAssigned> badgeAssignedList = new BadgeAssigned().toList(badgesGiven);
-                    for (int i = 0; i < badgeAssignedList.size(); i++) {
-                        int finalI = i;
-                        current = current.compose(v -> {
-                            Future<Void> next = getOwnerId(eb, badgeAssignedList.get(finalI));
-                            futures.add(next);
-                            return next;
-                        });
-                    }
-                    current.onSuccess(event -> {
-                        List<BadgeAssigned> finalBadgeAssignedList = badgeAssignedList;
-                        if (query != null && !query.isEmpty())
-                            finalBadgeAssignedList = badgeAssignedList.stream().filter(badgeAssigned ->
-                                    badgeAssigned.getBadge().owner().getFirstName().contains(query.toLowerCase())
-                                            || badgeAssigned.getBadge().owner().getLastName().toLowerCase().contains(query.toLowerCase())
-                                            || badgeAssigned.getBadge().getBadgeType().label().toLowerCase().contains(query.toLowerCase())).collect(Collectors.toList());
-
-                        promise.complete(finalBadgeAssignedList);
-                    });
-                    current.onFailure(event -> {
-                        event.printStackTrace();
-                        promise.fail(event.getMessage());
-                    });
-                    init.complete();
+                .compose(badgesGiven -> setUserInfos(eb, new BadgeAssigned().toList(badgesGiven)))
+                .onSuccess(badgeAssignedList -> {
+                    List<BadgeAssigned> finalBadgeAssignedList = filterBadgesGiven(query, badgeAssignedList);
+                    promise.complete(finalBadgeAssignedList);
                 })
                 .onFailure(promise::fail);
 
         return promise.future();
     }
 
-    Future<Void> getOwnerId(EventBus eb, BadgeAssigned badgeAssigned) {
+    private List<BadgeAssigned> filterBadgesGiven(String query, List<BadgeAssigned> badgeAssignedList) {
+        List<BadgeAssigned> finalBadgeAssignedList = badgeAssignedList;
+        if (query != null && !query.isEmpty())
+            finalBadgeAssignedList = badgeAssignedList.stream().filter(badgeAssigned ->
+                    badgeAssigned.getBadge().owner().getFirstName().contains(query.toLowerCase())
+                            || badgeAssigned.getBadge().owner().getLastName().toLowerCase().contains(query.toLowerCase())
+                            || badgeAssigned.getBadge().badgeType().label().toLowerCase().contains(query.toLowerCase())).collect(Collectors.toList());
+        return finalBadgeAssignedList;
+    }
+
+    Future<Void> setOwner(EventBus eb, BadgeAssigned badgeAssigned) {
         Promise<Void> promise = Promise.promise();
         UserUtils.getUserInfos(eb, badgeAssigned.getBadge().ownerId(), userInfos -> {
                     JsonObject userJson = new JsonObject();
@@ -104,7 +104,7 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
 
     private Future<JsonArray> getBadgesGivenRequest(String assignorId, String startDate, String endDate, String sortBy, Boolean sortAsc) {
         Promise<JsonArray> promise = Promise.promise();
-
+        List<String> acceptedSort = Arrays.asList("label", "created_at", "revoked_at");
         JsonArray params = new JsonArray();
         params.add(assignorId);
         boolean hasDates = startDate != null && endDate != null;
@@ -124,8 +124,9 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
                 " on badge.badge_type_id = bt.id" +
                 " WHERE ba.assignor_id = ? " +
                 ((hasDates) ? " AND ba.created_at  >= to_date(?,'DD-MM-YYYY') " +
-                        " AND ba.created_at  <= to_date(?,'DD-MM-YYYY') " : "") +
-                ((hasSort) ? "ORDER BY " + sortBy + (sortAsc ? " ASC " : " DESC ") : "") +
+                        " AND ba.created_at  <= to_date( ?, 'DD-MM-YYYY') " : "") +
+                " ORDER BY " +
+                ((hasSort && acceptedSort.contains(sortBy)) ? sortBy + (sortAsc ? " ASC " : " DESC ") : " id ") +
                 " ; ";
 
         sql.prepared(request, params, SqlResult.validResultHandler(PromiseHelper.handler(promise,
