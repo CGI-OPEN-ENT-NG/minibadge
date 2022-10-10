@@ -1,18 +1,21 @@
-import {Behaviours, moment, ng,idiom as lang, notify} from 'entcore';
+import {moment, ng, idiom as lang} from 'entcore';
 
-import {IBadgesGivenService, IBadgeTypeService} from "../services";
-import {BadgeType} from "../models/badge-type.model";
+import {IBadgesGivenService} from "../services";
 import {safeApply} from "../utils/safe-apply.utils";
-import {AxiosError} from "axios";
-import {MINIBADGE_APP} from "../minibadgeBehaviours";
 import {ILocationService, IScope} from "angular";
 import {Setting} from "../models/setting.model";
-import {Subscription} from "rxjs";
-import {BadgeAssigned} from "../models/badge-assigned.model";
+import {BadgeAssigned, IBadgeGivenPayload} from "../models/badge-assigned.model";
 import {DATE_FORMAT} from "../core/enum/date.enum";
 
 
 interface ViewModel {
+    startDate: Date;
+    endDate: Date;
+    labelTo: string
+    labelFrom: string
+    searchQuery: string;
+    badgesGiven: BadgeAssigned[];
+    payload: IBadgeGivenPayload;
 }
 
 
@@ -23,7 +26,6 @@ interface IMinibadgeScope extends IScope {
 
 class Controller implements ng.IController, ViewModel {
 
-    subscriptions: Subscription = new Subscription();
     badgesGiven: BadgeAssigned[];
     payload = {
         query: "",

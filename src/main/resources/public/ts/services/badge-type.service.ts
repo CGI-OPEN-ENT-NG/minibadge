@@ -1,15 +1,11 @@
 import {ng} from 'entcore';
-import http, {AxiosPromise, AxiosResponse} from 'axios';
+import http, {AxiosResponse} from 'axios';
 import {BadgeType, IBadgeTypeResponse, IBadgeTypesPayload, IBadgeTypesResponses} from "../models/badge-type.model";
 
 export interface IBadgeTypeService {
     getBadgeTypes(params: IBadgeTypesPayload): Promise<BadgeType[]>;
 
     getBadgeType(typeId: number): Promise<BadgeType>;
-
-    privatizeBadgeType(typeId: number): Promise<AxiosPromise>;
-
-    refuseBadgeType(typeId: number): Promise<AxiosPromise>;
 }
 
 export const badgeTypeService: IBadgeTypeService = {
@@ -32,23 +28,7 @@ export const badgeTypeService: IBadgeTypeService = {
      */
     getBadgeType: async (typeId: number): Promise<BadgeType> =>
         http.get(`/minibadge/types/${typeId}`)
-            .then((res: AxiosResponse) => new BadgeType(<IBadgeTypeResponse>res.data)),
-
-    /**
-     * privatize badge type for current user session
-     *
-     * @param typeId badge type identifier
-     */
-    privatizeBadgeType: async (typeId: number): Promise<AxiosPromise> =>
-        http.put(`/minibadge/types/${typeId}/privatize`),
-
-    /**
-     * refuse badge type for current user session
-     *
-     * @param typeId badge type identifier
-     */
-    refuseBadgeType: async (typeId: number): Promise<AxiosPromise> =>
-        http.put(`/minibadge/types/${typeId}/refuse`)
+            .then((res: AxiosResponse) => new BadgeType(<IBadgeTypeResponse>res.data))
 };
 
 export const BadgeTypeService = ng.service('BadgeTypeService', (): IBadgeTypeService => badgeTypeService);

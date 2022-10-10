@@ -9,6 +9,8 @@ import {BadgeAssigned} from "../../models/badge-assigned.model";
 
 interface IViewModel {
     DATE_FORMAT: typeof DATE_FORMAT;
+    isAsc: boolean;
+    label: string;
 }
 
 
@@ -42,10 +44,7 @@ class Controller implements ng.IController, IViewModel {
 
     onClick = (filterLabel: string) => {
         if (isFunction(this.$scope.vm.filterFunction)) {
-            if (this.label === filterLabel)
-                this.isAsc = !this.isAsc;
-            else
-                this.isAsc = true;
+            this.label === filterLabel ? this.isAsc = !this.isAsc : this.isAsc = true
             this.label = filterLabel;
             this.$scope.vm.filterFunction({filterType: this.label, filterAsc: this.isAsc});
         }

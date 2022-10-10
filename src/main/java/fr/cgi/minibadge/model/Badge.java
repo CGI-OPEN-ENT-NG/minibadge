@@ -17,7 +17,7 @@ public class Badge implements Model<Badge> {
     private User owner;
     private BadgeCounts badgeCounts;
 
-    public BadgeType getBadgeType() {
+    public BadgeType badgeType() {
         return badgeType;
     }
 

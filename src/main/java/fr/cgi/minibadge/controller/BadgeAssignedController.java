@@ -41,10 +41,9 @@ public class BadgeAssignedController extends ControllerHelper {
         String sortType = request.params().get(Request.SORT_BY);
         Boolean sortAsc = Boolean.parseBoolean(request.params().get(Request.SORT_ASC));
         UserUtils.getUserInfos(eb, request, user -> badgeAssignedService.getBadgesGiven(eb, query, startDate, endDate, sortType, sortAsc, user.getUserId())
-                .onSuccess(badges -> {
-                            renderJson(request, new JsonObject()
-                                    .put(Request.ALL, new JsonArray(badges.stream().map(Model::toJson).collect(Collectors.toList()))));
-                        }
+                .onSuccess(badges -> renderJson(request, new JsonObject()
+                                .put(Request.ALL, new JsonArray(badges.stream().map(Model::toJson).collect(Collectors.toList())))
+                        )
                 )
                 .onFailure(err -> renderError(request, new JsonObject().put(Request.MESSAGE, err.getMessage()))));
     }
