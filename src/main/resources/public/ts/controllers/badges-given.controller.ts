@@ -65,7 +65,7 @@ class Controller implements ng.IController, ViewModel {
     revokeBadge = async  (badgeGiven:BadgeAssigned) =>{
         //need to wait directives changes
         await safeApply(this.$scope);
-        // await this.BadgesGivenService.revokeBadgeGiven(badgeGiven);
+        await this.BadgesGivenService.revokeBadgeGiven(badgeGiven);
         await  this.initBadgeGiven();
         await safeApply(this.$scope);
     }

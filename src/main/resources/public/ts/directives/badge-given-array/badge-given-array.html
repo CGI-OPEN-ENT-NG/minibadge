@@ -46,15 +46,15 @@
                   ng-click="vm.openRevokeLightbox(badgeGiven)"><i class="trash"></i></span>
         </div>
     </div>
-    <lightbox show="vm.isOpenLightbox" on-close="vm.closeLightbox()" class="minibadge-revoke">
+    <lightbox show="vm.isOpenLightbox" on-close="vm.closeLightbox()" class="given-array-lightbox">
         <div class="minibadge-container flex-row f-column">
-            <h2 class="minibadge-assign-title" ng-click="vm.closeLightbox()">
+            <h2 class="given-array-lightbox-title" ng-click="vm.closeLightbox()">
                 <i18n>minibadge.given.lightbox.title</i18n>
             </h2>
-            <div class="flex-row minibadge-assign-content">
+            <div class="given-array-lightbox-label flex-row">
                 <i18n>minibadge.given.lightbox.label</i18n>
             </div>
-            <div class="minibadge-assign-footer flex-row justify-end">
+            <div class="given-array-lightbox-footer flex-row justify-end">
                 <button class="minibadge-delete-button"
                         ng-click="vm.closeLightbox()">
                     <i18n>minibadge.cancel</i18n>

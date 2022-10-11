@@ -12,6 +12,10 @@ interface IViewModel {
     DATE_FORMAT: typeof DATE_FORMAT;
     isAsc: boolean;
     label: string;
+    openRevokeLightbox (badgeGiven:BadgeAssigned);
+    closeLightbox();
+    validRevoke();
+    onClick(filterLabel: string)
 }
 
 
@@ -31,6 +35,7 @@ class Controller implements ng.IController, IViewModel {
     isAsc: boolean;
     label: string;
     isOpenLightbox:boolean;
+    badgeToRevoke: BadgeAssigned;
     constructor(private $scope: IMinibadgeScope,
                 private $location: ILocationService,
                 private $window: IWindowService) {
@@ -46,15 +51,18 @@ class Controller implements ng.IController, IViewModel {
     }
     openRevokeLightbox = (badgeGiven:BadgeAssigned) => {
         this.isOpenLightbox = true;
-        safeApply(this);
+        this.badgeToRevoke = badgeGiven
+    }
+    closeLightbox = () =>{
+        this.isOpenLightbox = false;
     }
 
-    onValidLightbox=() =>{
-        // vm.deleteFunction({badgeGiven:badgeGiven})
+    validRevoke = () =>{
+        this.$scope.vm.deleteFunction({badgeGiven:this.badgeToRevoke})
+        this.isOpenLightbox = false;
     }
+
     onClick = (filterLabel: string) => {
-        this.isOpenLightbox = true
-        safeApply(this)
         if (isFunction(this.$scope.vm.filterFunction)) {
             this.label === filterLabel ? this.isAsc = !this.isAsc : this.isAsc = true
             this.label = filterLabel;
