@@ -99,7 +99,12 @@
             @include paddingX(28px);
             @include paddingY(6px);
             white-space: nowrap;
+            justify-content: flex-start;
 
+            & .lock{
+              padding-left: 2.5px;
+              padding-right: 2.5px;
+            }
             &:first-child {
               border-radius: 2px 2px 0 0;
             }
