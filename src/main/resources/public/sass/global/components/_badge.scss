@@ -1,19 +1,14 @@
 .minibadge-badge {
   &-list {
     margin-top: 30px;
+    row-gap: 8px;
     background: $minibadge-white;
-    padding-bottom: 15px;
-    @include paddingX(10px);
-
+    @include paddingXY(8px, 16px);
     &.disabled {
       opacity: 0.5;
     }
 
-    &-label{
-      margin-left:0.2%;
-    }
     h3 {
-      margin-bottom: 0.3% ;
       display: flex;
       i.play {
         display: flex;
