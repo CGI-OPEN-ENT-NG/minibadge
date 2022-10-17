@@ -79,7 +79,7 @@ class Controller implements ng.IController, ViewModel {
                     this.refusedBadges = this.badges ? this.badges.filter((badge: Badge) => badge.isRefused()) : [];
                 }
 
-                this.isOpenedOption = this.payload.query && this.payload.query.length && this.payload.query.length > 0;
+                this.isOpenedOption = this.payload.query && !!this.payload.query.trim().length
                 safeApply(this.$scope);
             })
             .catch((err: AxiosError) => notify.error('minibadge.error.get.badges'))
