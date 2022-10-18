@@ -8,7 +8,7 @@ interface IViewModel {
 
 
 interface IDirectiveProperties {
-    isDisplayed:boolean;
+    isDisplayed: boolean;
     emptyLabel: string;
 }
 
@@ -26,7 +26,7 @@ class Controller implements ng.IController, IViewModel {
     }
 
     $onInit() {
-        if(!this.$scope.vm.emptyLabel) this.$scope.vm.emptyLabel = "minibadge.default.empty.statement";
+        if (!this.$scope.vm.emptyLabel) this.$scope.vm.emptyLabel = "minibadge.default.empty.statement";
     }
 
     $onDestroy() {
