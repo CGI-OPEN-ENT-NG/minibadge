@@ -46,7 +46,7 @@ class Controller implements ng.IController, IViewModel {
 
     $onInit() {
         if (this.$scope.vm.isDefaultOpenedList) this.isOpenedList = this.$scope.vm.isDefaultOpenedList;
-            this.isOpenedOption = !!this.$scope.vm.isOpenedOption
+        this.isOpenedOption = !!this.$scope.vm.isOpenedOption
         this.$scope.$watch((): Badge[] => this.$scope.vm.badges, (newBadges: Badge[], oldBadges: Badge[]): void => {
             this.checkOpenedListStatus(newBadges, oldBadges);
         });
