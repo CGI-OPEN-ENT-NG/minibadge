@@ -2,14 +2,15 @@ package fr.cgi.minibadge.helper;
 
 import fr.cgi.minibadge.core.constants.Request;
 import fr.wseduc.webutils.Either;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.Promise;
+import io.vertx.core.*;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.impl.CompositeFutureImpl;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+
+import java.util.List;
 
 public class PromiseHelper {
     private static final Logger log = LoggerFactory.getLogger(PromiseHelper.class);
@@ -61,5 +62,9 @@ public class PromiseHelper {
                 promise.fail(isErrorMessageDefined ? errorMessage : event.result().body().getString(Request.MESSAGE));
             }
         };
+    }
+
+    public static <T> CompositeFuture all(List<Future<T>> futures) {
+        return CompositeFutureImpl.all(futures.toArray(new Future[futures.size()]));
     }
 }
