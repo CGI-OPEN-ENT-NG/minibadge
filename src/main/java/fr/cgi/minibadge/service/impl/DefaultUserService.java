@@ -78,6 +78,39 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
+    public Future<Void> upsert(List<String> usersIds) {
+        Promise<Void> promise = Promise.promise();
+
+        Set<String> distinctUsersIds = new HashSet<>(usersIds);
+        List<Future<JsonObject>> futures = new ArrayList<>();
+        distinctUsersIds.stream().forEach(userId -> UserUtils.getUserInfos(eb, userId, user -> {
+            futures.add(upsertRequest(user));
+        }));
+
+        PromiseHelper.all(futures).onSuccess(success -> {
+            promise.complete();
+        });
+        return promise.future();
+    }
+
+    private Future<JsonObject> upsertRequest(UserInfos user) {
+        Promise<JsonObject> promise = Promise.promise();
+        String request = String.format(" INSERT INTO %s (id , display_name ) " +
+                " VALUES ( ? , ?) ON CONFLICT (id) DO UPDATE SET display_name = ?" +
+                "  WHERE %s.id = EXCLUDED.id ;", USER_TABLE, USER_TABLE);
+        JsonArray params = new JsonArray()
+                .add(user.getUserId())
+                .add(user.getUsername())
+                .add(user.getUsername());
+
+        sql.prepared(request, params, SqlResult.validUniqueResultHandler(PromiseHelper.handler(promise,
+                String.format("[Minibadge@%s::updateTimeProperty] Fail to update badge",
+                        this.getClass().getSimpleName()))));
+
+        return promise.future();
+    }
+
+    @Override
     public Future<List<User>> getUsers(List<String> userIds) {
         Promise<List<User>> promise = Promise.promise();
         getUsersRequest(userIds)
