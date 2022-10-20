@@ -80,22 +80,35 @@ public class DefaultUserService implements UserService {
     @Override
     public Future<Void> upsert(List<String> usersIds) {
         Promise<Void> promise = Promise.promise();
-
+        JsonArray statements = new JsonArray();
         Set<String> distinctUsersIds = new HashSet<>(usersIds);
-        List<Future<JsonObject>> futures = new ArrayList<>();
-        distinctUsersIds.stream().forEach(userId -> UserUtils.getUserInfos(eb, userId, user -> {
-            futures.add(upsertRequest(user));
+        usersIds = new ArrayList<>(distinctUsersIds);
+        JsonObject params = new JsonObject();
+        params.put(USER_ID, new JsonArray(usersIds));
+        params.put(ACTION, LIST_USERS);
+        List<User> users = new ArrayList<>();
+        eb.request(DIRECTORY, params, handlerToAsyncHandler(message -> {
+            if (message.body().getString(STATUS).equals(OK)) {
+                message.body().getJsonArray(RESULT).stream().forEach(userData -> {
+                    User user = new User();
+                    JsonObject userJo = ((JsonObject) userData);
+                    user.setUserId(userJo.getString(Field.ID));
+                    user.setUsername(userJo.getString(Field.USERNAME));
+                    users.add(user);
+                });
+                users.forEach(user -> statements.add(upsertStatement(user)));
+                sql.transaction(statements, event -> {
+                    if (event.body().getString(STATUS).equals(OK)) {
+                        promise.complete();
+                    }
+                });
+            }
         }));
-
-        PromiseHelper.all(futures).onSuccess(success -> {
-            promise.complete();
-        });
         return promise.future();
     }
 
-    private Future<JsonObject> upsertRequest(UserInfos user) {
-        Promise<JsonObject> promise = Promise.promise();
-        String request = String.format(" INSERT INTO %s (id , display_name ) " +
+    private JsonObject upsertStatement(User user) {
+        String statement = String.format(" INSERT INTO %s (id , display_name ) " +
                 " VALUES ( ? , ?) ON CONFLICT (id) DO UPDATE SET display_name = ?" +
                 "  WHERE %s.id = EXCLUDED.id ;", USER_TABLE, USER_TABLE);
         JsonArray params = new JsonArray()
@@ -103,11 +116,10 @@ public class DefaultUserService implements UserService {
                 .add(user.getUsername())
                 .add(user.getUsername());
 
-        sql.prepared(request, params, SqlResult.validUniqueResultHandler(PromiseHelper.handler(promise,
-                String.format("[Minibadge@%s::updateTimeProperty] Fail to update badge",
-                        this.getClass().getSimpleName()))));
-
-        return promise.future();
+        return new JsonObject()
+                .put("statement", statement)
+                .put("values", params)
+                .put("action", "prepared");
     }
 
     @Override
