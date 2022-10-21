@@ -43,6 +43,9 @@ public class Field {
     public static final String ACCEPTRECEIVE = "acceptReceive";
     public static final String PERMISSIONS = "permissions";
 
+    //USER
+    public static final String USERIDS = "userIds";
+
     private Field() {
         throw new IllegalStateException("Utility class");
     }

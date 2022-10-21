@@ -89,7 +89,7 @@ public class DefaultUserService implements UserService {
         Promise<JsonArray> promise = Promise.promise();
         JsonObject action = new JsonObject()
                 .put(EventBusConst.ACTION, EventBusConst.LIST_USERS)
-                .put(EventBusConst.USERIDS, userIds);
+                .put(Field.USERIDS, userIds);
         eb.request(EventBusConst.DIRECTORY, action, PromiseHelper.messageHandler(promise,
                 "[Minibadge@%s::getUsersRequest] Fail to retrieve users from eventBus"));
         return promise.future();
