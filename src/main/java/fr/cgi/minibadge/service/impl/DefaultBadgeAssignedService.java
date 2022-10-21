@@ -101,7 +101,7 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
 
     private Future<JsonArray> getBadgesGivenRequest(String assignorId, String startDate, String endDate, String sortBy, Boolean sortAsc) {
         Promise<JsonArray> promise = Promise.promise();
-        List<String> acceptedSort = Arrays.asList("label", "created_at", "revoked_at");
+        List<String> acceptedSort = Arrays.asList("label", "created_at", "revoked_at","display_name");
         JsonArray params = new JsonArray();
         params.add(assignorId);
         boolean hasDates = startDate != null && endDate != null;
