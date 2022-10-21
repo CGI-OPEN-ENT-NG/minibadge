@@ -4,6 +4,7 @@ import fr.cgi.minibadge.Minibadge;
 import fr.cgi.minibadge.core.constants.Database;
 import fr.cgi.minibadge.core.constants.Field;
 import fr.cgi.minibadge.helper.PromiseHelper;
+import fr.cgi.minibadge.helper.SqlHelper;
 import fr.cgi.minibadge.model.BadgeAssigned;
 import fr.cgi.minibadge.model.User;
 import fr.cgi.minibadge.service.BadgeAssignedService;
@@ -50,58 +51,22 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
         return promise.future();
     }
 
-    Future<List<BadgeAssigned>> setUserInfos(EventBus eb, List<BadgeAssigned> badgeAssignedList) {
-        Promise<List<BadgeAssigned>> promise = Promise.promise();
-        Future<Void> current = Future.succeededFuture();
-        for (BadgeAssigned badgeAssigned: badgeAssignedList) {
-            current = current.compose(v -> setOwner(eb, badgeAssigned));
-
-        }
-        current
-                .onSuccess(res -> promise.complete(badgeAssignedList))
-                .onFailure(promise::fail);
-        return promise.future();
-    }
-
     @Override
     public Future<List<BadgeAssigned>> getBadgesGiven(EventBus eb, String query, String startDate, String endDate, String sortBy,
                                                       Boolean sortAsc, String assignorId) {
         Promise<List<BadgeAssigned>> promise = Promise.promise();
-        getBadgesGivenRequest(assignorId, startDate, endDate, sortBy, sortAsc)
+        getBadgesGivenRequest(assignorId, startDate, endDate, sortBy, sortAsc ,query)
                 .onSuccess(badgesGiven -> promise.complete(new BadgeAssigned().toList(badgesGiven)))
                 .onFailure(promise::fail);
 
         return promise.future();
     }
 
-    private List<BadgeAssigned> filterBadgesGiven(String query, List<BadgeAssigned> badgeAssignedList) {
-        List<BadgeAssigned> finalBadgeAssignedList = badgeAssignedList;
-        if (query != null && !query.isEmpty())
-            finalBadgeAssignedList = badgeAssignedList.stream().filter(badgeAssigned ->
-                    badgeAssigned.getBadge().owner().getFirstName().contains(query.toLowerCase())
-                            || badgeAssigned.getBadge().owner().getLastName().toLowerCase().contains(query.toLowerCase())
-                            || badgeAssigned.getBadge().badgeType().label().toLowerCase().contains(query.toLowerCase())).collect(Collectors.toList());
-        return finalBadgeAssignedList;
-    }
-
-    Future<Void> setOwner(EventBus eb, BadgeAssigned badgeAssigned) {
-        Promise<Void> promise = Promise.promise();
-        UserUtils.getUserInfos(eb, badgeAssigned.getBadge().ownerId(), userInfos -> {
-                    JsonObject userJson = new JsonObject();
-                    userJson.put(Field.ID, userInfos.getUserId())
-                            .put(Field.FIRSTNAME, userInfos.getFirstName())
-                            .put(Field.LASTNAME, userInfos.getLastName());
-                    User user = new User(userJson);
-                    badgeAssigned.getBadge().setOwner(user);
-                    promise.complete();
-                }
-        );
-        return promise.future();
-    }
-
-    private Future<JsonArray> getBadgesGivenRequest(String assignorId, String startDate, String endDate, String sortBy, Boolean sortAsc) {
+    private Future<JsonArray> getBadgesGivenRequest(String assignorId, String startDate, String endDate,
+                                                    String sortBy, Boolean sortAsc ,String query) {
         Promise<JsonArray> promise = Promise.promise();
         List<String> acceptedSort = Arrays.asList("label", "created_at", "revoked_at","display_name");
+        List<String> columns = Arrays.asList("display_name", "label");
         JsonArray params = new JsonArray();
         params.add(assignorId);
         boolean hasDates = startDate != null && endDate != null;
@@ -122,8 +87,9 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
                 " INNER JOIN " + USER_TABLE + " as us " +
                 " ON us.id = badge.owner_id " +
                 " WHERE ba.assignor_id = ? " +
-                ((hasDates) ? " AND ba.created_at  >= to_date(?,'DD-MM-YYYY') " +
-                        " AND ba.created_at  <= to_date( ?, 'DD-MM-YYYY') " : "") +
+                ((hasDates) ? " AND ba.created_at::date  >= to_date(?,'DD-MM-YYYY') " +
+                        " AND ba.created_at::date  <= to_date( ?, 'DD-MM-YYYY') " : "") +
+                 ((query != null && !query.isEmpty())  ? " AND " + SqlHelper.searchQueryInColumns(query,columns,params) :" ") +
                 " ORDER BY " +
                 ((hasSort && acceptedSort.contains(sortBy)) ? sortBy + (sortAsc ? " ASC " : " DESC ") : " id ") +
                 " ; ";
