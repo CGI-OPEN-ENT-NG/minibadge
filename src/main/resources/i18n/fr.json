@@ -38,6 +38,7 @@
   "minibadge.given.array.revoked": "Révocation",
   "minibadge.given.sort.date": "created_at",
   "minibadge.given.sort.label": "label",
+  "minibadge.given.sort.owner.displayName": "display_name",
   "minibadge.given.sort.revoked": "revoked_at",
   "minibadge.more.information": "Plus d'informations",
   "minibadge.my.badges.received": "Mes badges reçus",

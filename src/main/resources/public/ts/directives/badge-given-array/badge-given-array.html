@@ -5,10 +5,13 @@
             <i ng-show="vm.isAsc  && vm.label === 'minibadge.given.sort.label'"  class="sort-arrow-down"></i>
             <i  ng-show="!vm.isAsc  && vm.label === 'minibadge.given.sort.label'" class="sort-arrow-up"></i>
         </div>
-        <div class="given-array-cell flex-row flex-one  justify-center"   >
+        <div class="given-array-cell flex-row flex-one  justify-center"    ng-click="vm.onClick('minibadge.given.sort.owner.displayName')" >
             <i18n>minibadge.given.array.owner</i18n>
+            <i ng-show="vm.isAsc  && vm.label === 'minibadge.given.sort.owner.displayName'"  class="sort-arrow-down"></i>
+            <i  ng-show="!vm.isAsc  && vm.label === 'minibadge.given.sort.owner.displayName'" class="sort-arrow-up"></i>
         </div>
-        <div class="mobile-disabled given-array-cell flex-row flex-one  justify-center" ng-click="vm.onClick('minibadge.given.sort.date')" >
+        <div class="mobile-disabled given-array-cell flex-row flex-one  justify-center"
+             ng-click="vm.onClick('minibadge.given.sort.date')" >
             <i18n>minibadge.given.array.date</i18n>
 
             <i ng-show="vm.isAsc  && vm.label === 'minibadge.given.sort.date'"  class="sort-arrow-down"></i>
