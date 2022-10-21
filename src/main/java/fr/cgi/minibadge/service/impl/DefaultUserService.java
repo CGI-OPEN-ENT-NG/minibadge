@@ -85,6 +85,7 @@ public class DefaultUserService implements UserService {
                 .onSuccess(users -> promise.complete(new User().toList(users)));
         return promise.future();
     }
+
     private Future<JsonArray> getUsersRequest(List<String> userIds) {
         Promise<JsonArray> promise = Promise.promise();
         JsonObject action = new JsonObject()
@@ -103,8 +104,8 @@ public class DefaultUserService implements UserService {
 
         getUsers(usersIds).onSuccess(users -> {
             JsonArray statements = new JsonArray(users.stream().map(this::upsertStatement).collect(Collectors.toList()));
-                sql.transaction(statements, PromiseHelper.messageToPromise(promise));
-            });
+            sql.transaction(statements, PromiseHelper.messageToPromise(promise));
+        });
         return promise.future();
     }
 
