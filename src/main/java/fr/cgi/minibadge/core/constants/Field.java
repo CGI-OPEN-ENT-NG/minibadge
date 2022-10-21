@@ -21,6 +21,7 @@ public class Field {
     public static final String CREATEDAT = "createdAt";
     public static final String CREATED_AT = "created_at";
     public static final String DISPLAYNAME = "displayName";
+    public static final String DISPLAY_NAME = "display_name";
     public static final String FIRSTNAME = "firstName";
     public static final String LASTNAME = "lastName";
     public static final String USERNAME = "username";

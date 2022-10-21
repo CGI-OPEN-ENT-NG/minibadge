@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static fr.cgi.minibadge.service.impl.DefaultBadgeService.BADGE_TABLE;
 import static fr.cgi.minibadge.service.impl.DefaultBadgeTypeService.BADGE_TYPE_TABLE;
+import static fr.cgi.minibadge.service.impl.DefaultUserService.USER_TABLE;
 
 public class DefaultBadgeAssignedService implements BadgeAssignedService {
 
@@ -67,11 +68,7 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
                                                       Boolean sortAsc, String assignorId) {
         Promise<List<BadgeAssigned>> promise = Promise.promise();
         getBadgesGivenRequest(assignorId, startDate, endDate, sortBy, sortAsc)
-                .compose(badgesGiven -> setUserInfos(eb, new BadgeAssigned().toList(badgesGiven)))
-                .onSuccess(badgeAssignedList -> {
-                    List<BadgeAssigned> finalBadgeAssignedList = filterBadgesGiven(query, badgeAssignedList);
-                    promise.complete(finalBadgeAssignedList);
-                })
+                .onSuccess(badgesGiven -> promise.complete(new BadgeAssigned().toList(badgesGiven)))
                 .onFailure(promise::fail);
 
         return promise.future();
@@ -113,15 +110,17 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
             params.add(startDate);
             params.add(endDate);
         }
-        String request = "SELECT ba.id, ba.badge_id, ba.assignor_id, ba.accepted_at, ba.revoked_at, ba.updated_at, " +
-                "ba.created_at as created_at , bt.picture_id ," +
+        String request = "SELECT ba.id, ba.badge_id, ba.assignor_id, ba.revoked_at, ba.updated_at, " +
+                " ba.created_at as created_at , bt.picture_id , us.display_name ," +
                 " bt.label as label, badge.owner_id " +
                 ", badge.id as " + Field.BADGE_ID + " , bt.id as  " + Field.BADGE_TYPE_ID +
                 " FROM " + BADGE_ASSIGNED_TABLE + " as ba " +
                 " INNER JOIN " + BADGE_TABLE + " " +
                 " on ba.badge_id = badge.id " +
                 " INNER JOIN " + BADGE_TYPE_TABLE + " as bt " +
-                " on badge.badge_type_id = bt.id" +
+                " on badge.badge_type_id = bt.id " +
+                " INNER JOIN " + USER_TABLE + " as us " +
+                " ON us.id = badge.owner_id " +
                 " WHERE ba.assignor_id = ? " +
                 ((hasDates) ? " AND ba.created_at  >= to_date(?,'DD-MM-YYYY') " +
                         " AND ba.created_at  <= to_date( ?, 'DD-MM-YYYY') " : "") +
