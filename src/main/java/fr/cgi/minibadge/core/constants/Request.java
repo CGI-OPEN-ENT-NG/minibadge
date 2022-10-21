@@ -16,11 +16,6 @@ public class Request {
     public static final String PREFERENCE = "preference";
     public static final String PREFERENCES = "preferences";
     public static final String RIGHT = "right";
-    public static final String ACTION = "action";
-    public static final String USER_ID = "userIds";
-    public static final String DIRECTORY = "directory";
-    public static final String LIST_USERS =  "list-users";
-
 
     private Request() {
         throw new IllegalStateException("Utility class");

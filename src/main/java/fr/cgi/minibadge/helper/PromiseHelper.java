@@ -12,6 +12,8 @@ import io.vertx.core.logging.LoggerFactory;
 
 import java.util.List;
 
+import static fr.cgi.minibadge.core.constants.Request.*;
+
 public class PromiseHelper {
     private static final Logger log = LoggerFactory.getLogger(PromiseHelper.class);
 
@@ -42,6 +44,18 @@ public class PromiseHelper {
     public static <R> Handler<AsyncResult<Message<JsonObject>>> messageHandler(Promise<R> promise) {
         return messageHandler(promise, null);
     }
+
+    public static <R> Handler<Message<JsonObject>> messageToPromise(Promise<R> promise) {
+        return  event -> {
+            if (event.body().getString(STATUS).equals(OK)) {
+                promise.complete();
+            }else{
+                log.error(String.format("%s", event.body().getString(MESSAGE)));
+                promise.fail(event.body().getString(MESSAGE));
+            }
+        };
+    }
+
 
     @SuppressWarnings("unchecked")
     public static <R> Handler<AsyncResult<Message<JsonObject>>> messageHandler(Promise<R> promise, String errorMessage) {

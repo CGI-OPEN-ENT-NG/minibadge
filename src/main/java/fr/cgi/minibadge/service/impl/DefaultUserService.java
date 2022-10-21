@@ -2,6 +2,7 @@ package fr.cgi.minibadge.service.impl;
 
 import fr.cgi.minibadge.Minibadge;
 import fr.cgi.minibadge.core.constants.Database;
+import fr.cgi.minibadge.core.constants.EventBusConst;
 import fr.cgi.minibadge.core.constants.Field;
 import fr.cgi.minibadge.core.constants.Rights;
 import fr.cgi.minibadge.helper.Neo4jHelper;
@@ -77,32 +78,33 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
+    public Future<List<User>> getUsers(List<String> userIds) {
+        Promise<List<User>> promise = Promise.promise();
+        getUsersRequest(userIds)
+                .onFailure(promise::fail)
+                .onSuccess(users -> promise.complete(new User().toList(users)));
+        return promise.future();
+    }
+    private Future<JsonArray> getUsersRequest(List<String> userIds) {
+        Promise<JsonArray> promise = Promise.promise();
+        JsonObject action = new JsonObject()
+                .put(EventBusConst.ACTION, EventBusConst.LIST_USERS)
+                .put(EventBusConst.USERIDS, userIds);
+        eb.request(EventBusConst.DIRECTORY, action, PromiseHelper.messageHandler(promise,
+                "[Minibadge@%s::getUsersRequest] Fail to retrieve users from eventBus"));
+        return promise.future();
+    }
+
+    @Override
     public Future<Void> upsert(List<String> usersIds) {
         Promise<Void> promise = Promise.promise();
-        JsonArray statements = new JsonArray();
         Set<String> distinctUsersIds = new HashSet<>(usersIds);
         usersIds = new ArrayList<>(distinctUsersIds);
-        JsonObject params = new JsonObject();
-        params.put(USER_ID, new JsonArray(usersIds));
-        params.put(ACTION, LIST_USERS);
-        List<User> users = new ArrayList<>();
-        eb.request(DIRECTORY, params, handlerToAsyncHandler(message -> {
-            if (message.body().getString(STATUS).equals(OK)) {
-                message.body().getJsonArray(RESULT).stream().forEach(userData -> {
-                    User user = new User();
-                    JsonObject userJo = ((JsonObject) userData);
-                    user.setUserId(userJo.getString(Field.ID));
-                    user.setUsername(userJo.getString(Field.USERNAME));
-                    users.add(user);
-                });
-                users.forEach(user -> statements.add(upsertStatement(user)));
-                sql.transaction(statements, event -> {
-                    if (event.body().getString(STATUS).equals(OK)) {
-                        promise.complete();
-                    }
-                });
-            }
-        }));
+
+        getUsers(usersIds).onSuccess(users -> {
+            JsonArray statements = new JsonArray(users.stream().map(this::upsertStatement).collect(Collectors.toList()));
+                sql.transaction(statements, PromiseHelper.messageToPromise(promise));
+            });
         return promise.future();
     }
 

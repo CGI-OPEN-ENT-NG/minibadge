@@ -3,7 +3,6 @@ package fr.cgi.minibadge;
 import fr.cgi.minibadge.controller.*;
 import fr.cgi.minibadge.service.ServiceFactory;
 import fr.wseduc.mongodb.MongoDb;
-import io.vertx.core.eventbus.EventBus;
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.neo4j.Neo4j;
 import org.entcore.common.sql.Sql;
