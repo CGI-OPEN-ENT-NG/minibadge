@@ -45,7 +45,7 @@ public class PromiseHelper {
         return messageHandler(promise, null);
     }
 
-    public static <Void> Handler<Message<JsonObject>> messageToPromise(Promise<Void> promise) {
+    public static Handler<Message<JsonObject>> messageToPromise(Promise<Void> promise) {
         return  event -> {
             if (event.body().getString(STATUS).equals(OK)) {
                 promise.complete();
