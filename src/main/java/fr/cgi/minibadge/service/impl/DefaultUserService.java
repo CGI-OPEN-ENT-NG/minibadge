@@ -103,53 +103,6 @@ public class DefaultUserService implements UserService {
 
         getUsers(usersIds).onSuccess(users -> {
             JsonArray statements = new JsonArray(users.stream().map(this::upsertStatement).collect(Collectors.toList()));
-                sql.transaction(statements, PromiseHelper.messageToPromise(promise));
-            });
-        return promise.future();
-    }
-
-    private JsonObject upsertStatement(User user) {
-        String statement = String.format(" INSERT INTO %s (id , display_name ) " +
-                " VALUES ( ? , ?) ON CONFLICT (id) DO UPDATE SET display_name = ?" +
-                "  WHERE %s.id = EXCLUDED.id ;", USER_TABLE, USER_TABLE);
-        JsonArray params = new JsonArray()
-                .add(user.getUserId())
-                .add(user.getUsername())
-                .add(user.getUsername());
-
-        return new JsonObject()
-                .put("statement", statement)
-                .put("values", params)
-                .put("action", "prepared");
-    }
-
-    @Override
-    public Future<List<User>> getUsers(List<String> userIds) {
-        Promise<List<User>> promise = Promise.promise();
-        getUsersRequest(userIds)
-                .onFailure(promise::fail)
-                .onSuccess(users -> promise.complete(new User().toList(users)));
-        return promise.future();
-    }
-
-    private Future<JsonArray> getUsersRequest(List<String> userIds) {
-        Promise<JsonArray> promise = Promise.promise();
-        JsonObject action = new JsonObject()
-                .put(EventBusConst.ACTION, EventBusConst.LIST_USERS)
-                .put(Field.USERIDS, userIds);
-        eb.request(EventBusConst.DIRECTORY, action, PromiseHelper.messageHandler(promise,
-                "[Minibadge@%s::getUsersRequest] Fail to retrieve users from eventBus"));
-        return promise.future();
-    }
-
-    @Override
-    public Future<Void> upsert(List<String> usersIds) {
-        Promise<Void> promise = Promise.promise();
-        Set<String> distinctUsersIds = new HashSet<>(usersIds);
-        usersIds = new ArrayList<>(distinctUsersIds);
-
-        getUsers(usersIds).onSuccess(users -> {
-            JsonArray statements = new JsonArray(users.stream().map(this::upsertStatement).collect(Collectors.toList()));
             sql.transaction(statements, PromiseHelper.messageToPromise(promise));
         });
         return promise.future();
