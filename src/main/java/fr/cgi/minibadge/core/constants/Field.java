@@ -51,7 +51,8 @@ public class Field {
     public static final String REFUSEDAT = "refusedAt";
     public static final String DISABLED_AT = "disabled_at";
     public static final String DISABLEDAT = "disabledAt";
-
+    public static final String LEVEL = "level";
+    public static final String ASSIGNABLEBY = "assignableBy";
     // CHART
     public static final String ACCEPTCHART = "acceptChart";
     public static final String ACCEPTASSIGN = "acceptAssign";

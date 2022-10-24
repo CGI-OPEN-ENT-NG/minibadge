@@ -2,7 +2,13 @@ package fr.cgi.minibadge.model;
 
 import fr.cgi.minibadge.core.constants.Database;
 import fr.cgi.minibadge.core.constants.Field;
+import fr.wseduc.webutils.I18n;
 import io.vertx.core.json.JsonObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 
 public class BadgeType implements Model<BadgeType> {
@@ -15,6 +21,8 @@ public class BadgeType implements Model<BadgeType> {
     private String description;
     private String createdAt;
     private User owner;
+    private String level = "Éleves";
+    private final List<String> assignableBy = Collections.singletonList("Éleves");
 
     public BadgeType() {
     }
@@ -83,6 +91,14 @@ public class BadgeType implements Model<BadgeType> {
         this.description = description;
     }
 
+    public String level() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
     public User owner() {
         return owner;
     }
@@ -100,7 +116,9 @@ public class BadgeType implements Model<BadgeType> {
                 .put(Field.PICTUREID, this.pictureId)
                 .put(Field.LABEL, this.label)
                 .put(Field.CREATEDAT, this.createdAt)
-                .put(Field.DESCRIPTION, this.description);
+                .put(Field.DESCRIPTION, this.description)
+                .put(Field.LEVEL, this.level)
+                .put(Field.ASSIGNABLEBY, this.assignableBy);
 
         if (this.owner != null)
             badgeType.put(Field.OWNER, this.owner.toJson());
