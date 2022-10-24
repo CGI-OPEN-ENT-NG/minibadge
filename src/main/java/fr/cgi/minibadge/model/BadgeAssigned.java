@@ -22,7 +22,7 @@ public class BadgeAssigned implements Model<BadgeAssigned>{
     }
 
 
-    public Badge setBadge(Long idBadge, Long idBadgeType, String typeLabel, String pictureId, String ownerId, String display_name) {
+    public Badge setBadge(Long idBadge, Long idBadgeType, String typeLabel, String pictureId, String ownerId, String displayName) {
         return new Badge(
                 new JsonObject()
                         .put(Field.ID, idBadge)
@@ -30,7 +30,7 @@ public class BadgeAssigned implements Model<BadgeAssigned>{
                         .put(Field.BADGE_TYPE_LABEL, typeLabel)
                         .put(Field.BADGE_TYPE_PICTURE_ID, pictureId)
                         .put(Field.OWNER_ID,ownerId)
-                .put(Field.DISPLAYNAME,display_name)
+                .put(Field.DISPLAYNAME,displayName)
         );
     }
     @Override
