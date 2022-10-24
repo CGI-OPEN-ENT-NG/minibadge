@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static fr.cgi.minibadge.core.constants.Field.*;
 import static fr.cgi.minibadge.service.impl.DefaultBadgeService.BADGE_TABLE;
 import static fr.cgi.minibadge.service.impl.DefaultBadgeTypeService.BADGE_TYPE_TABLE;
 import static fr.cgi.minibadge.service.impl.DefaultUserService.USER_TABLE;
@@ -65,8 +66,8 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
     private Future<JsonArray> getBadgesGivenRequest(String assignorId, String startDate, String endDate,
                                                     String sortBy, Boolean sortAsc ,String query) {
         Promise<JsonArray> promise = Promise.promise();
-        List<String> acceptedSort = Arrays.asList("label", "created_at", "revoked_at","display_name");
-        List<String> columns = Arrays.asList("display_name", "label");
+        List<String> acceptedSort = Arrays.asList(LABEL, CREATED_AT, REVOKED_AT,DISPLAY_NAME);
+        List<String> columns = Arrays.asList(DISPLAY_NAME, LABEL);
         JsonArray params = new JsonArray();
         params.add(assignorId);
         boolean hasDates = startDate != null && endDate != null;
@@ -78,7 +79,7 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
         String request = "SELECT ba.id, ba.badge_id, ba.assignor_id, ba.revoked_at, ba.updated_at, " +
                 " ba.created_at as created_at , bt.picture_id , us.display_name ," +
                 " bt.label as label, badge.owner_id " +
-                ", badge.id as " + Field.BADGE_ID + " , bt.id as  " + Field.BADGE_TYPE_ID +
+                ", badge.id as " + BADGE_ID + " , bt.id as  " + BADGE_TYPE_ID +
                 " FROM " + BADGE_ASSIGNED_TABLE + " as ba " +
                 " INNER JOIN " + BADGE_TABLE + " " +
                 " on ba.badge_id = badge.id " +
