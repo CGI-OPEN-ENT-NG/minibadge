@@ -10,12 +10,12 @@
                 ng-bind="vm.badgeType.createdAt | date:vm.DATE_FORMAT.DAY_MONTH_YEAR_KEBAB"></span></div>
         <div>
             <i class="target"></i>
-            <i18n>minibadge.gave.level</i18n>&Tab; : &Tab;<span
+            <i18n>minibadge.gave.level</i18n> : <span
                 ng-bind="vm.badgeType.level"></span></div>
         <div>
             <i class="human-arrow"></i>
             <i18n>minibadge.assignable.by</i18n>&Tab;:
-            <span ng-repeat="assigny in vm.badgeType.assignableBy"
-                ng-bind="assigny "></span></div>
+            <span ng-repeat="assignableByValue in vm.badgeType.assignableBy"
+                ng-bind="assignableByValue"></span></div>
     </div>
 </div>
