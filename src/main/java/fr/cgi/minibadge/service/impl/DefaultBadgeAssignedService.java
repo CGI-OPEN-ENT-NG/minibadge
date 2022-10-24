@@ -6,6 +6,9 @@ import fr.cgi.minibadge.core.constants.Field;
 import fr.cgi.minibadge.helper.PromiseHelper;
 import fr.cgi.minibadge.model.BadgeAssigned;
 import fr.cgi.minibadge.model.User;
+import fr.cgi.minibadge.helper.SqlHelper;
+import fr.cgi.minibadge.model.BadgeAssigned;
+import fr.cgi.minibadge.model.User;
 import fr.cgi.minibadge.service.BadgeAssignedService;
 import fr.cgi.minibadge.service.BadgeService;
 import io.vertx.core.Future;
@@ -25,6 +28,12 @@ import java.util.stream.Collectors;
 
 import static fr.cgi.minibadge.service.impl.DefaultBadgeService.BADGE_TABLE;
 import static fr.cgi.minibadge.service.impl.DefaultBadgeTypeService.BADGE_TYPE_TABLE;
+import java.util.stream.Collectors;
+
+import static fr.cgi.minibadge.core.constants.Field.*;
+import static fr.cgi.minibadge.service.impl.DefaultBadgeService.BADGE_TABLE;
+import static fr.cgi.minibadge.service.impl.DefaultBadgeTypeService.BADGE_TYPE_TABLE;
+import static fr.cgi.minibadge.service.impl.DefaultUserService.USER_TABLE;
 
 public class DefaultBadgeAssignedService implements BadgeAssignedService {
 
@@ -49,78 +58,22 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
         return promise.future();
     }
 
-    Future<List<BadgeAssigned>> setUserInfos(EventBus eb, List<BadgeAssigned> badgeAssignedList) {
-        Promise<List<BadgeAssigned>> promise = Promise.promise();
-        Future<Void> current = Future.succeededFuture();
-        for (BadgeAssigned badgeAssigned: badgeAssignedList) {
-            current = current.compose(v -> setOwner(eb, badgeAssigned));
-
-        }
-        current
-                .onSuccess(res -> promise.complete(badgeAssignedList))
-                .onFailure(promise::fail);
-        return promise.future();
-    }
-
     @Override
     public Future<List<BadgeAssigned>> getBadgesGiven(EventBus eb, String query, String startDate, String endDate, String sortBy,
                                                       Boolean sortAsc, String assignorId) {
         Promise<List<BadgeAssigned>> promise = Promise.promise();
-        getBadgesGivenRequest(assignorId, startDate, endDate, sortBy, sortAsc)
-                .compose(badgesGiven -> setUserInfos(eb, new BadgeAssigned().toList(badgesGiven)))
-                .onSuccess(badgeAssignedList -> {
-                    List<BadgeAssigned> finalBadgeAssignedList = filterBadgesGiven(query, badgeAssignedList);
-                    promise.complete(finalBadgeAssignedList);
-                })
+        getBadgesGivenRequest(assignorId, startDate, endDate, sortBy, sortAsc ,query)
+                .onSuccess(badgesGiven -> promise.complete(new BadgeAssigned().toList(badgesGiven)))
                 .onFailure(promise::fail);
 
         return promise.future();
     }
 
-    private List<BadgeAssigned> filterBadgesGiven(String query, List<BadgeAssigned> badgeAssignedList) {
-        List<BadgeAssigned> finalBadgeAssignedList = badgeAssignedList;
-        if (query != null && !query.isEmpty())
-            finalBadgeAssignedList = badgeAssignedList.stream().filter(badgeAssigned ->
-                    badgeAssigned.getBadge().owner().getFirstName().contains(query.toLowerCase())
-                            || badgeAssigned.getBadge().owner().getLastName().toLowerCase().contains(query.toLowerCase())
-                            || badgeAssigned.getBadge().badgeType().label().toLowerCase().contains(query.toLowerCase())).collect(Collectors.toList());
-        return finalBadgeAssignedList;
-    }
-
-    Future<Void> setOwner(EventBus eb, BadgeAssigned badgeAssigned) {
-        Promise<Void> promise = Promise.promise();
-        UserUtils.getUserInfos(eb, badgeAssigned.getBadge().ownerId(), userInfos -> {
-                    JsonObject userJson = new JsonObject();
-                    userJson.put(Field.ID, userInfos.getUserId())
-                            .put(Field.FIRSTNAME, userInfos.getFirstName())
-                            .put(Field.LASTNAME, userInfos.getLastName());
-                    User user = new User(userJson);
-                    badgeAssigned.getBadge().setOwner(user);
-                    promise.complete();
-                }
-        );
-        return promise.future();
-    }
-    @Override
-    public Future<JsonArray> revoke(long badgeId) {
+    private Future<JsonArray> getBadgesGivenRequest(String assignorId, String startDate, String endDate,
+                                                    String sortBy, Boolean sortAsc ,String query) {
         Promise<JsonArray> promise = Promise.promise();
-
-        JsonArray params = new JsonArray();
-        params.add(badgeId);
-
-        String request = "UPDATE " + BADGE_ASSIGNED_TABLE +
-                " SET revoked_at = NOW ()"+
-                " WHERE id = ?; ";
-
-        sql.prepared(request, params, SqlResult.validResultHandler(PromiseHelper.handler(promise,
-                String.format("[Minibadge@%s::getBadgesTypesRequest] Fail to revoke badge",
-                        this.getClass().getSimpleName()))));
-        return promise.future();
-    }
-
-    private Future<JsonArray> getBadgesGivenRequest(String assignorId, String startDate, String endDate, String sortBy, Boolean sortAsc) {
-        Promise<JsonArray> promise = Promise.promise();
-        List<String> acceptedSort = Arrays.asList("label", "created_at", "revoked_at");
+        List<String> acceptedSort = Arrays.asList(LABEL, CREATED_AT, REVOKED_AT,DISPLAY_NAME);
+        List<String> columns = Arrays.asList(DISPLAY_NAME, LABEL);
         JsonArray params = new JsonArray();
         params.add(assignorId);
         boolean hasDates = startDate != null && endDate != null;
@@ -129,18 +82,21 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
             params.add(startDate);
             params.add(endDate);
         }
-        String request = "SELECT ba.id, ba.badge_id, ba.assignor_id, ba.accepted_at, ba.revoked_at, ba.updated_at, " +
-                "ba.created_at as created_at , bt.picture_id ," +
+        String request = "SELECT ba.id, ba.badge_id, ba.assignor_id, ba.revoked_at, ba.updated_at, " +
+                " ba.created_at as created_at , bt.picture_id , us.display_name ," +
                 " bt.label as label, badge.owner_id " +
-                ", badge.id as " + Field.BADGE_ID + " , bt.id as  " + Field.BADGE_TYPE_ID +
+                ", badge.id as " + BADGE_ID + " , bt.id as  " + BADGE_TYPE_ID +
                 " FROM " + BADGE_ASSIGNED_TABLE + " as ba " +
                 " INNER JOIN " + BADGE_TABLE + " " +
                 " on ba.badge_id = badge.id " +
                 " INNER JOIN " + BADGE_TYPE_TABLE + " as bt " +
-                " on badge.badge_type_id = bt.id" +
+                " on badge.badge_type_id = bt.id " +
+                " INNER JOIN " + USER_TABLE + " as us " +
+                " ON us.id = badge.owner_id " +
                 " WHERE ba.assignor_id = ? " +
-                ((hasDates) ? " AND ba.created_at  >= to_date(?,'DD-MM-YYYY') " +
-                        " AND ba.created_at  <= to_date( ?, 'DD-MM-YYYY') " : "") +
+                ((hasDates) ? " AND ba.created_at::date  >= to_date(?,'DD-MM-YYYY') " +
+                        " AND ba.created_at::date  <= to_date( ?, 'DD-MM-YYYY') " : "") +
+                 ((query != null && !query.isEmpty())  ? " AND " + SqlHelper.searchQueryInColumns(query,columns,params) :" ") +
                 " ORDER BY " +
                 ((hasSort && acceptedSort.contains(sortBy)) ? sortBy + (sortAsc ? " ASC " : " DESC ") : " id ") +
                 " ; ";
@@ -171,6 +127,23 @@ public class DefaultBadgeAssignedService implements BadgeAssignedService {
                 String.format("[Minibadge@%s::createBadgeAssignedRequest] Fail to create badge assigned",
                         this.getClass().getSimpleName()))));
 
+        return promise.future();
+    }
+
+    @Override
+    public Future<JsonArray> revoke(long badgeId) {
+        Promise<JsonArray> promise = Promise.promise();
+
+        JsonArray params = new JsonArray();
+        params.add(badgeId);
+
+        String request = "UPDATE " + BADGE_ASSIGNED_TABLE +
+                " SET revoked_at = NOW ()"+
+                " WHERE id = ?; ";
+
+        sql.prepared(request, params, SqlResult.validResultHandler(PromiseHelper.handler(promise,
+                String.format("[Minibadge@%s::getBadgesTypesRequest] Fail to revoke badge",
+                        this.getClass().getSimpleName()))));
         return promise.future();
     }
 }

@@ -7,12 +7,18 @@ import {AxiosError} from "axios";
 import {Badge, IBadgePayload} from "../models/badge.model";
 import {CARD_FOOTER} from "../core/enum/card-footers.enum";
 import {ActionOption, IActionOptionResponse} from "../models/action-option.model";
+import {IChartService} from "../services/chart.service";
 
 interface ViewModel {
     getBadges(): Promise<void>;
 
+    openChartLightbox(): void;
+
     badges: Badge[];
     searchQuery: string;
+    isChartLightboxOpened: boolean;
+    isChartAccepted: boolean;
+    isMinibadgeAccepted: boolean;
     publishedBadges: Badge[];
     privatizedBadges: Badge[];
     refusedBadges: Badge[];
@@ -27,6 +33,7 @@ class Controller implements ng.IController, ViewModel {
     private static privatizeOption: string = 'minibadge.privatize';
     private static refuseOption: string = 'minibadge.refuse';
     private static publicOption: string = 'minibadge.publish';
+    private static acceptOption: string = 'minibadge.accept';
     private payload: IBadgePayload;
 
     CARD_FOOTER: typeof CARD_FOOTER;
@@ -34,12 +41,19 @@ class Controller implements ng.IController, ViewModel {
     publishedBadges: Badge[];
     privatizedBadges: Badge[];
     refusedBadges: Badge[];
-
-
+    isOpenedOption:boolean = false;
     searchQuery: string;
+    isChartLightboxOpened: boolean;
+    isChartAccepted: boolean;
+    isMinibadgeAccepted: boolean;
 
-    constructor(private $scope: IMinibadgeScope, private $location: ILocationService, private badgeService: IBadgeService) {
+    constructor(private $scope: IMinibadgeScope, private $location: ILocationService,
+                private badgeService: IBadgeService, private chartService: IChartService) {
         this.$scope.vm = this;
+        this.isChartLightboxOpened = !this.$scope.setting.userPermissions.acceptChart;
+        this.isChartAccepted = !!this.$scope.setting.userPermissions.acceptChart;
+        this.isMinibadgeAccepted = !!this.$scope.setting.userPermissions.acceptAssign
+            || !!this.$scope.setting.userPermissions.acceptReceive;
         this.payload = {};
     }
 
@@ -65,10 +79,25 @@ class Controller implements ng.IController, ViewModel {
                     this.refusedBadges = this.badges ? this.badges.filter((badge: Badge) => badge.isRefused()) : [];
                 }
 
+                this.isOpenedOption = this.payload.query && !!this.payload.query.trim().length;
                 safeApply(this.$scope);
             })
             .catch((err: AxiosError) => notify.error('minibadge.error.get.badges'))
     }
+
+    openChartLightbox = (): void => {
+        this.isChartLightboxOpened = true;
+    }
+
+    chartValidate = async (): Promise<void> => {
+        this.chartService.saveChart(this.isChartAccepted, this.isMinibadgeAccepted)
+            .then(async () => {
+                await this.initBadges();
+                this.$scope.setting.userPermissions = await this.chartService.getChart();
+            })
+            .catch((err: AxiosError) => notify.error('minibadge.error.chart.validate'));
+    }
+
 
     private setBadgeActionOptions(badges: Badge[]): void {
         badges.forEach((badge: Badge) => {
@@ -89,7 +118,7 @@ class Controller implements ng.IController, ViewModel {
     }
 
     private initRefuseActionOptions(badge: Badge): ActionOption[] {
-        return [this.publicOption(badge), this.privatizeOption(badge)];
+        return [this.acceptOption(badge)];
     }
 
     private privatizeOption(badge: Badge): ActionOption {
@@ -119,9 +148,19 @@ class Controller implements ng.IController, ViewModel {
         });
     }
 
+    private acceptOption(badge: Badge): ActionOption {
+        return new ActionOption(<IActionOptionResponse>{
+            label: Controller.acceptOption,
+            icon: 'check-circle',
+            action: () => this.badgeService.publishBadgeType(badge.badgeType.id)
+                .then(async () => await this.initBadges()),
+        });
+    }
+
+
     $onDestroy() {
     }
 }
 
 export const minibadgeController = ng.controller('MinibadgeController',
-    ['$scope', '$location', 'BadgeService', Controller]);
+    ['$scope', '$location', 'BadgeService', 'ChartService', Controller]);

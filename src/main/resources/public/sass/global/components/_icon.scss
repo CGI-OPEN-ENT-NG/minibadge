@@ -20,6 +20,15 @@ i {
     font-family: 'material-icons';
     content: "\F4BD";
   }
+  &.sort-arrow-up::before{
+    font-family: 'material-icons';
+    content: "\F4BC";
+
+  }
+  &.sort-arrow-down::before{
+    font-family: 'material-icons';
+    content: "\F4BD";
+  }
 
   &.user-circle::before {
     font-family: 'material-icons';
@@ -59,5 +68,10 @@ i {
   &.refused::before {
     font-family: 'material-icons';
     content: "\F697";
+  }
+
+  &.settings::before {
+    font-family: 'material-icons';
+    content: "\F493";
   }
 }

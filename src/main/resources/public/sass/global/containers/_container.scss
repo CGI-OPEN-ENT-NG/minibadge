@@ -10,7 +10,7 @@
   }
 
   h3 {
-    margin: 10px 0 0;
+    margin: 0;
     color: $minibadge-grey;
     font-size: 16px;
     font-weight: normal;
@@ -18,6 +18,10 @@
     @include mobile {
       @include marginX(10px);
     }
+  }
+
+  i.settings:hover {
+    color: $minibadge-orange;
   }
 }
 

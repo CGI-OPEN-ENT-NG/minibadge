@@ -22,7 +22,7 @@ public class BadgeAssigned implements Model<BadgeAssigned>{
     }
 
 
-    public Badge setBadge(Long idBadge, Long idBadgeType, String typeLabel, String pictureId, String ownerId) {
+    public Badge setBadge(Long idBadge, Long idBadgeType, String typeLabel, String pictureId, String ownerId, String displayName) {
         return new Badge(
                 new JsonObject()
                         .put(Field.ID, idBadge)
@@ -30,6 +30,7 @@ public class BadgeAssigned implements Model<BadgeAssigned>{
                         .put(Field.BADGE_TYPE_LABEL, typeLabel)
                         .put(Field.BADGE_TYPE_PICTURE_ID, pictureId)
                         .put(Field.OWNER_ID,ownerId)
+                .put(Field.DISPLAYNAME,displayName)
         );
     }
     @Override
@@ -50,13 +51,14 @@ public class BadgeAssigned implements Model<BadgeAssigned>{
                 badgeAssigned.getLong(Field.BADGE_TYPE_ID,badgeAssigned.getLong(Field.BADGETYPEID)),
                 badgeAssigned.getString(Field.LABEL),
                 badgeAssigned.getString(Field.PICTURE_ID,badgeAssigned.getString(Field.PICTUREID)),
-                badgeAssigned.getString(Field.OWNER_ID,badgeAssigned.getString(Field.OWNERID)
-                        )
+                badgeAssigned.getString(Field.OWNER_ID,badgeAssigned.getString(Field.OWNERID)),
+                badgeAssigned.getString(Field.DISPLAYNAME, badgeAssigned.getString(Field.DISPLAY_NAME))
                 );
+
         return this;
     }
 
-    public Long getId() {
+    public Long id() {
         return id;
     }
 
@@ -68,7 +70,7 @@ public class BadgeAssigned implements Model<BadgeAssigned>{
         this.assignor = assignor;
     }
 
-    public String getCreatedAt() {
+    public String createdAt() {
         return createdAt;
     }
 
@@ -76,7 +78,7 @@ public class BadgeAssigned implements Model<BadgeAssigned>{
         this.createdAt = createdAt;
     }
 
-    public String getUpdatedAt() {
+    public String updatedAt() {
         return updatedAt;
     }
 
@@ -84,7 +86,7 @@ public class BadgeAssigned implements Model<BadgeAssigned>{
         this.updatedAt = updatedAt;
     }
 
-    public String getRevokedAt() {
+    public String revokedAt() {
         return revokedAt;
     }
 
@@ -92,7 +94,7 @@ public class BadgeAssigned implements Model<BadgeAssigned>{
         this.revokedAt = revokedAt;
     }
 
-    public String getAcceptedAt() {
+    public String acceptedAt() {
         return acceptedAt;
     }
 
@@ -100,14 +102,14 @@ public class BadgeAssigned implements Model<BadgeAssigned>{
         this.acceptedAt = acceptedAt;
     }
 
-    public Badge getBadge() {
+    public Badge badge() {
         return badge;
     }
 
     public void setBadge(Badge badge) {
         this.badge = badge;
     }
-    public String getAssignorId() {
+    public String assignorId() {
         return assignorId;
     }
 

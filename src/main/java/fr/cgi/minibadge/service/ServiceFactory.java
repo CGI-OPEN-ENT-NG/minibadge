@@ -36,11 +36,15 @@ public class ServiceFactory {
     }
 
     public BadgeService badgeService() {
-        return new DefaultBadgeService(sql);
+        return new DefaultBadgeService(sql, this.userService());
     }
 
     public BadgeAssignedService badgeAssignedService() {
         return new DefaultBadgeAssignedService(sql, this.badgeService());
+    }
+
+    public UserService userService() {
+        return new DefaultUserService(sql, this.eventBus());
     }
 
     // Helpers

@@ -1,5 +1,5 @@
 import {ng} from 'entcore';
-import http, {AxiosPromise, AxiosResponse} from 'axios';
+import http, {AxiosResponse} from 'axios';
 import {BadgeAssigned, IBadgeGivenPayload} from "../models/badge-assigned.model";
 import {IBadgeTypesResponses} from "../models/badge-type.model";
 

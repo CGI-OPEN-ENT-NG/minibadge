@@ -6,6 +6,7 @@ import fr.cgi.minibadge.helper.PromiseHelper;
 import fr.cgi.minibadge.helper.SqlHelper;
 import fr.cgi.minibadge.model.Badge;
 import fr.cgi.minibadge.service.BadgeService;
+import fr.cgi.minibadge.service.UserService;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.json.JsonArray;
@@ -23,16 +24,19 @@ public class DefaultBadgeService implements BadgeService {
     private final Sql sql;
     public static final String BADGE_TABLE = String.format("%s.%s", Minibadge.dbSchema, Database.BADGE);
     public static final String BADGE_ASSIGNABLE_TABLE = String.format("%s.%s", Minibadge.dbSchema, Database.BADGE_ASSIGNABLE);
+    private final UserService userService;
 
-    public DefaultBadgeService(Sql sql) {
+    public DefaultBadgeService(Sql sql, UserService userService) {
         this.sql = sql;
+        this.userService = userService;
     }
 
     @Override
     public Future<Void> createBadges(long typeId, List<String> ownerIds) {
         Promise<Void> promise = Promise.promise();
 
-        createBadgesRequest(typeId, ownerIds)
+        userService.upsert(ownerIds)
+                .compose(event -> createBadgesRequest(typeId, ownerIds))
                 .onSuccess(badgeTypes -> promise.complete())
                 .onFailure(promise::fail);
 
@@ -158,6 +162,42 @@ public class DefaultBadgeService implements BadgeService {
         JsonArray params = new JsonArray()
                 .add(ownerId)
                 .add(typeId);
+
+        sql.prepared(request, params, SqlResult.validUniqueResultHandler(PromiseHelper.handler(promise,
+                String.format("[Minibadge@%s::updateTimeProperty] Fail to update badge",
+                        this.getClass().getSimpleName()))));
+
+        return promise.future();
+    }
+
+    @Override
+    public Future<Void> disableBadges(String ownerId) {
+        Promise<Void> promise = Promise.promise();
+
+        changeDisableBadgesRequest(ownerId, Database.NOW_SQL_FUNCTION)
+                .onSuccess(badge -> promise.complete())
+                .onFailure(promise::fail);
+
+        return promise.future();
+    }
+
+    @Override
+    public Future<Void> enableBadges(String ownerId) {
+        Promise<Void> promise = Promise.promise();
+
+        changeDisableBadgesRequest(ownerId, Database.NULL)
+                .onSuccess(badge -> promise.complete())
+                .onFailure(promise::fail);
+
+        return promise.future();
+    }
+
+    private Future<JsonObject> changeDisableBadgesRequest(String ownerId, String disableValue) {
+        Promise<JsonObject> promise = Promise.promise();
+
+        String request = String.format("UPDATE %s SET disabled_at = %s WHERE owner_id = ?", BADGE_TABLE, disableValue);
+
+        JsonArray params = new JsonArray().add(ownerId);
 
         sql.prepared(request, params, SqlResult.validUniqueResultHandler(PromiseHelper.handler(promise,
                 String.format("[Minibadge@%s::updateTimeProperty] Fail to update badge",
