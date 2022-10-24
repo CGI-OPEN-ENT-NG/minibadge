@@ -21,10 +21,17 @@
 
   &-img {
     padding-right: 1em;
+    @include mobile {
+      padding-right: 0;
+    }
     max-width: 70%;
   }
+
   &-label {
     width: 30%;
+    @include mobile {
+      width: 75%;
+    }
   }
 
   &-img img {
@@ -33,5 +40,8 @@
 
   &-cell {
     padding: 1em;
+    @include mobile {
+      padding: 0;
+    }
   }
 }
