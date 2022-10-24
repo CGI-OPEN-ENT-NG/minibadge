@@ -19,8 +19,8 @@ public class Request {
 
     public static final String START_DATE = "startDate";
     public static final String END_DATE = "endDate";
-    public static final String SORT_BY= "sortBy";
-    public static final String SORT_ASC = "sortAsc";
+    public static final String SORTBY = "sortBy";
+    public static final String SORTASC = "sortAsc";
 
     private Request() {
         throw new IllegalStateException("Utility class");

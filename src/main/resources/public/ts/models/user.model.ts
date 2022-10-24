@@ -35,6 +35,6 @@ export class User extends MinibadgeModel<User> {
         return new User(model)
     };
 
-    getCompleteName = (): string => `${this.firstName} ${this.lastName}`
+    getDisplayName = (): string => !!this.displayName ? this.displayName : `${this.firstName} ${this.lastName}`;
 
 }

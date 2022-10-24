@@ -5,6 +5,7 @@ import fr.cgi.minibadge.core.constants.Field;
 import fr.cgi.minibadge.core.constants.Request;
 import fr.cgi.minibadge.model.Model;
 import fr.cgi.minibadge.security.UsersAssignRight;
+import fr.cgi.minibadge.security.ViewRight;
 import fr.cgi.minibadge.service.BadgeAssignedService;
 import fr.cgi.minibadge.service.ServiceFactory;
 import fr.wseduc.rs.ApiDoc;
@@ -34,12 +35,14 @@ public class BadgeAssignedController extends ControllerHelper {
 
     @Get("/assigned/given")
     @ApiDoc("get all the badge the user has given")
+    @SecuredAction(value = "", type = ActionType.RESOURCE)
+    @ResourceFilter(ViewRight.class)
     public void get(HttpServerRequest request) {
         String query = request.params().get(Request.QUERY);
         String startDate = request.params().get(Request.START_DATE);
         String endDate = request.params().get(Request.END_DATE);
-        String sortType = request.params().get(Request.SORT_BY);
-        Boolean sortAsc = Boolean.parseBoolean(request.params().get(Request.SORT_ASC));
+        String sortType = request.params().get(Request.SORTBY);
+        Boolean sortAsc = Boolean.parseBoolean(request.params().get(Request.SORTASC));
         UserUtils.getUserInfos(eb, request, user -> badgeAssignedService.getBadgesGiven(eb, query, startDate, endDate, sortType, sortAsc, user.getUserId())
                 .onSuccess(badges -> renderJson(request, new JsonObject()
                                 .put(Request.ALL, new JsonArray(badges.stream().map(Model::toJson).collect(Collectors.toList())))
