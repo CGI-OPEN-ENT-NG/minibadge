@@ -1,6 +1,7 @@
 import {ILimitOffsetPayload, IPaginatedResponses} from "./request.model";
 import {IUserResponse, User} from "./user.model";
 import {MinibadgeModel} from "./model";
+import {BadgeSettings} from "./badge-settings.model";
 
 export interface IBadgeTypeResponse {
     id?: number;
@@ -13,6 +14,7 @@ export interface IBadgeTypeResponse {
     assignableBy?: string[];
     level?: string;
     owner?: User;
+    settings?: BadgeSettings[];
 }
 
 export interface IBadgeTypesPayload extends ILimitOffsetPayload {
@@ -33,6 +35,7 @@ export class BadgeType extends MinibadgeModel<BadgeType> {
     assignableBy?: string[];
     level?: string;
     owner?: User;
+    settings?: BadgeSettings[];
 
     constructor(data?: IBadgeTypeResponse) {
         super();
@@ -50,6 +53,7 @@ export class BadgeType extends MinibadgeModel<BadgeType> {
         this.level = data.level;
         this.assignableBy = data.assignableBy;
         this.owner = new User(<IUserResponse>data.owner);
+        this.settings = data.settings;
         return this;
     }
 

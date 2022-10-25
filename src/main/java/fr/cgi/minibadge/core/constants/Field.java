@@ -62,6 +62,15 @@ public class Field {
     //USER
     public static final String USERIDS = "userIds";
 
+    //Protagonist
+    public static final String TYPE = "type";
+    public static final String TYPEID = "typeId";
+    public static final String ISSELFASSIGNABLE = "isSelfAssignable";
+    public static final String ASSIGNORTYPE = "assignorType";
+    public static final String RECEIVERTYPE = "receiverType";
+    public static final String SETTINGS = "settings";
+    public static final String RELATIONS = "relations";
+
     private Field() {
         throw new IllegalStateException("Utility class");
     }
