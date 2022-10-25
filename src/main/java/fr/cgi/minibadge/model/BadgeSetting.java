@@ -9,8 +9,8 @@ import java.util.List;
 
 import static fr.cgi.minibadge.core.constants.Database.STRUCTUREID;
 
-public class BadgeSetting implements Model {
-    //A changer des que la bdd ser opérationnelle
+public class BadgeSetting implements Model<BadgeSetting> {
+    //A changer des que la bdd sera opérationnelle
     List<BadgeProtagonistSettingRelation> relations = new ArrayList<>();
 
 
@@ -18,6 +18,7 @@ public class BadgeSetting implements Model {
     String structureId;
 
     public BadgeSetting() {
+        //A changer des que la bdd sera opérationnelle
         relations.add(new BadgeProtagonistSettingRelation());
     }
 
@@ -55,18 +56,18 @@ public class BadgeSetting implements Model {
         relations.forEach(relation -> relationsList.add(relation.toJson()));
 
         return new JsonObject()
-                .put(Field.RELATIONS , relationsList)
+                .put(Field.RELATIONS, relationsList)
                 .put(Field.ISSELFASSIGNABLE, is_self_assignable)
                 .put(STRUCTUREID, structureId);
     }
 
     @Override
-    public Model model(JsonObject model) {
+    public BadgeSetting model(JsonObject model) {
         return null;
     }
 
     @Override
-    public Model set(JsonObject model) {
+    public BadgeSetting set(JsonObject model) {
         return null;
     }
 }

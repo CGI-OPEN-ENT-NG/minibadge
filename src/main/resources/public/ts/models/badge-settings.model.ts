@@ -2,16 +2,16 @@ import {MinibadgeModel} from "./model";
 import {BadgeProtagonistSettingRelation} from "./badge-protagonist-setting.model";
 
 export interface IBadgeSettingResponse {
-    is_self_assignable:boolean;
-    structureId :string;
-    relations : BadgeProtagonistSettingRelation[];
+    is_self_assignable: boolean;
+    structureId: string;
+    relations: BadgeProtagonistSettingRelation[];
 }
 
 
-
 export class BadgeSettings extends MinibadgeModel<BadgeSettings> {
-    is_self_assignable:boolean;
-    structureId :string;
+    is_self_assignable: boolean;
+    structureId: string;
+    relations: BadgeProtagonistSettingRelation[];
 
     constructor(data?: IBadgeSettingResponse) {
         super();

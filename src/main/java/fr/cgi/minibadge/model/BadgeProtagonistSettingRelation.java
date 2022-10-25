@@ -3,7 +3,9 @@ package fr.cgi.minibadge.model;
 import fr.cgi.minibadge.core.constants.Field;
 import io.vertx.core.json.JsonObject;
 //CORRESPOND A LA TABLE : https://confluence.support-ent.fr/display/BAD/Ajout+de+la+table+Protagoniste
-public class BadgeProtagonistSettingRelation implements Model{
+public class BadgeProtagonistSettingRelation implements  Model<BadgeProtagonistSettingRelation>{
+
+    //A changer des que la bdd sera opérationnelle
     BadgeProtagonistSetting assignor = new BadgeProtagonistSetting();
     BadgeProtagonistSetting receiver = new BadgeProtagonistSetting();
 
@@ -33,12 +35,12 @@ public class BadgeProtagonistSettingRelation implements Model{
     }
 
     @Override
-    public Model model(JsonObject model) {
+    public BadgeProtagonistSettingRelation model(JsonObject model) {
         return null;
     }
 
     @Override
-    public Model set(JsonObject model) {
+    public BadgeProtagonistSettingRelation set(JsonObject model) {
         return null;
     }
 }
