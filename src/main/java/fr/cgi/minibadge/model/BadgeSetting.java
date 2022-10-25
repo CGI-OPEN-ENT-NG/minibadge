@@ -19,7 +19,6 @@ public class BadgeSetting implements Model<BadgeSetting> {
 
     public BadgeSetting() {
         //A changer des que la bdd sera opérationnelle
-        relations.add(new BadgeProtagonistSettingRelation());
     }
 
     public List<BadgeProtagonistSettingRelation> relations() {

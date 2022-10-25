@@ -6,8 +6,8 @@ import io.vertx.core.json.JsonObject;
 public class BadgeProtagonistSettingRelation implements  Model<BadgeProtagonistSettingRelation>{
 
     //A changer des que la bdd sera opérationnelle
-    BadgeProtagonistSetting assignor = new BadgeProtagonistSetting();
-    BadgeProtagonistSetting receiver = new BadgeProtagonistSetting();
+    BadgeProtagonistSetting assignor ;
+    BadgeProtagonistSetting receiver ;
 
     public BadgeProtagonistSettingRelation() {
     }

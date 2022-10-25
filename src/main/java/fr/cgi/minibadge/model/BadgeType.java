@@ -26,7 +26,6 @@ public class BadgeType implements Model<BadgeType> {
     private List<BadgeSetting> settings = new ArrayList<>();
 
     public BadgeType() {
-        settings.add(new BadgeSetting());
     }
 
     public BadgeType(JsonObject badgeType) {
@@ -101,6 +100,9 @@ public class BadgeType implements Model<BadgeType> {
         this.owner = owner;
     }
 
+    public void addSetting(BadgeSetting setting){
+        settings.add(setting);
+    }
     @Override
     public JsonObject toJson() {
         JsonObject badgeType = new JsonObject()

@@ -6,7 +6,7 @@ import io.vertx.core.json.JsonObject;
 //CORRESPOND A LA TABLE : https://confluence.support-ent.fr/display/BAD/Ajout+de+la+table+Protagoniste
 public class BadgeProtagonistSetting implements Model<BadgeProtagonistSetting> {
     String typeId;
-    String type = "Éleve";
+    String type ;
 
     public BadgeProtagonistSetting() {
     }
