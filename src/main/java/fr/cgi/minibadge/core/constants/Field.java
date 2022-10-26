@@ -69,6 +69,7 @@ public class Field {
     public static final String ASSIGNORTYPE = "assignorType";
     public static final String RECEIVERTYPE = "receiverType";
     public static final String SETTINGS = "settings";
+    public static final String SETTING = "setting";
     public static final String RELATIONS = "relations";
 
     private Field() {

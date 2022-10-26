@@ -93,7 +93,7 @@ public class DefaultBadgeTypeService implements BadgeTypeService {
         relation.setAssignor(assignor);
         relation.setReceiver(receiver);
         badgeSetting.addRelation(relation);
-        badgeType.addSetting(badgeSetting);
+        badgeType.setSetting(badgeSetting);
     }
 
     private Future<JsonObject> getBadgeTypeRequest(List<String> structureIds, long typeId) {

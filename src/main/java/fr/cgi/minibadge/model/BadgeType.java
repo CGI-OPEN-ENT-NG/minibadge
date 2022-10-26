@@ -23,7 +23,7 @@ public class BadgeType implements Model<BadgeType> {
     private String description;
     private String createdAt;
     private User owner;
-    private List<BadgeSetting> settings = new ArrayList<>();
+    private BadgeSetting setting = new BadgeSetting();
 
     public BadgeType() {
     }
@@ -100,9 +100,10 @@ public class BadgeType implements Model<BadgeType> {
         this.owner = owner;
     }
 
-    public void addSetting(BadgeSetting setting){
-        settings.add(setting);
+    public void setSetting(BadgeSetting setting) {
+        this.setting = setting;
     }
+
     @Override
     public JsonObject toJson() {
         JsonObject badgeType = new JsonObject()
@@ -113,10 +114,7 @@ public class BadgeType implements Model<BadgeType> {
                 .put(Field.LABEL, this.label)
                 .put(Field.CREATEDAT, this.createdAt)
                 .put(Field.DESCRIPTION, this.description);
-
-        JsonArray settingsList = new JsonArray();
-        settings.forEach(setting -> settingsList.add(setting.toJson()));
-        badgeType.put(Field.SETTINGS, settingsList);
+        badgeType.put(Field.SETTING, this.setting.toJson());
         if (this.owner != null)
             badgeType.put(Field.OWNER, this.owner.toJson());
 

@@ -12,7 +12,7 @@ export interface IBadgeTypeResponse {
     description: string;
     createdAt?: string;
     owner?: User;
-    settings?: BadgeSettings[];
+    setting?: BadgeSettings;
 }
 
 export interface IBadgeTypesPayload extends ILimitOffsetPayload {
@@ -31,7 +31,7 @@ export class BadgeType extends MinibadgeModel<BadgeType> {
     description: string;
     createdAt?: string;
     owner?: User;
-    settings?: BadgeSettings[];
+    setting?: BadgeSettings;
 
     constructor(data?: IBadgeTypeResponse) {
         super();
@@ -47,7 +47,7 @@ export class BadgeType extends MinibadgeModel<BadgeType> {
         this.description = data.description;
         this.createdAt = data.createdAt;
         this.owner = new User(<IUserResponse>data.owner);
-        this.settings = data.settings;
+        this.setting = data.setting;
         return this;
     }
 
@@ -58,20 +58,16 @@ export class BadgeType extends MinibadgeModel<BadgeType> {
     displayAssignors = (): string => {
         let assigners = [];
 
-        this.settings.forEach(setting => {
-            setting.relations.forEach(relation => {
-                assigners.push(relation.assignorType.type + " ");
-            })
+        this.setting.relations.forEach(relation => {
+            assigners.push(relation.assignorType.type + " ");
         })
         return assigners.toString()
     }
     displayReceivers = (): string => {
         let receivers = [];
 
-        this.settings.forEach(setting => {
-            setting.relations.forEach(relation => {
-                receivers.push(relation.receiverType.type + " ");
-            })
+        this.setting.relations.forEach(relation => {
+            receivers.push(relation.receiverType.type + " ");
         })
         return receivers.toString()
     }
