@@ -56,20 +56,10 @@ export class BadgeType extends MinibadgeModel<BadgeType> {
     };
 
     displayAssignors = (): string => {
-        let assigners = [];
-
-        this.setting.relations.forEach(relation => {
-            assigners.push(relation.assignorType.type + " ");
-        })
-        return assigners.toString()
+        return this.setting.relations.map((relation) => relation.assignorType.type).join(", ")
     }
     displayReceivers = (): string => {
-        let receivers = [];
-
-        this.setting.relations.forEach(relation => {
-            receivers.push(relation.receiverType.type + " ");
-        })
-        return receivers.toString()
+        return this.setting.relations.map((relation) => relation.receiverType.type).join(", ")
     }
     getDetailPath = (): string => `/badge-types/${this.id}`;
 
