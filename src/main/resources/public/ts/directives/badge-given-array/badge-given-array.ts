@@ -12,18 +12,24 @@ interface IViewModel {
     DATE_FORMAT: typeof DATE_FORMAT;
     isAsc: boolean;
     label: string;
-    openRevokeLightbox (badgeGiven:BadgeAssigned);
-    closeLightbox();
-    validRevoke();
-    onClick(filterLabel: string)
+
+    openRevokeLightbox(badgeGiven: BadgeAssigned): void;
+
+    closeLightbox(): void;
+
+    validRevoke(): void;
+
+    onClick(filterLabel: string): void;
 }
 
 
 interface IDirectiveProperties {
     filterFunction?({filterType: string, filterAsc: boolean}): void;
-    deleteFunction({badgeGiven:BadgeAssigned});
+
+    deleteFunction({badgeGiven: BadgeAssigned}): void;
+
     badgesGiven: BadgeAssigned[];
-    isOpenLightbox:boolean;
+    isOpenLightbox: boolean;
 }
 
 interface IMinibadgeScope extends IScope {
@@ -34,8 +40,9 @@ class Controller implements ng.IController, IViewModel {
     DATE_FORMAT: typeof DATE_FORMAT;
     isAsc: boolean;
     label: string;
-    isOpenLightbox:boolean;
+    isOpenLightbox: boolean;
     badgeToRevoke: BadgeAssigned;
+
     constructor(private $scope: IMinibadgeScope,
                 private $location: ILocationService,
                 private $window: IWindowService) {
@@ -49,16 +56,17 @@ class Controller implements ng.IController, IViewModel {
 
     $onDestroy() {
     }
-    openRevokeLightbox = (badgeGiven:BadgeAssigned) => {
+
+    openRevokeLightbox = (badgeGiven: BadgeAssigned) => {
         this.isOpenLightbox = true;
         this.badgeToRevoke = badgeGiven
     }
-    closeLightbox = () =>{
+    closeLightbox = () => {
         this.isOpenLightbox = false;
     }
 
-    validRevoke = () =>{
-        this.$scope.vm.deleteFunction({badgeGiven:this.badgeToRevoke})
+    validRevoke = () => {
+        this.$scope.vm.deleteFunction({badgeGiven: this.badgeToRevoke})
         this.isOpenLightbox = false;
     }
 
@@ -80,7 +88,7 @@ function directive(): IDirective {
         scope: {
             badgesGiven: '=',
             filterFunction: '&',
-            deleteFunction:'&'
+            deleteFunction: '&'
         },
         controllerAs: 'vm',
         bindToController: true,

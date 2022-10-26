@@ -22,6 +22,7 @@ public class Database {
      */
     public static final String MINIBADGECHART = "minibadgechart";
     public static final String IDBADGE = "idBadge";
+    public static final String BADGEID = "badgeId";
 
     private Database() {
         throw new IllegalStateException("Utility class");

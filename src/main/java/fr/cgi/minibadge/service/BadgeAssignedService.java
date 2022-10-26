@@ -4,8 +4,6 @@ import fr.cgi.minibadge.model.BadgeAssigned;
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonArray;
-import io.vertx.core.eventbus.EventBus;
-import io.vertx.core.json.JsonArray;
 import org.entcore.common.user.UserInfos;
 
 import java.util.List;
@@ -35,5 +33,12 @@ public interface BadgeAssignedService {
      */
     Future<List<BadgeAssigned>> getBadgesGiven(EventBus eb, String query, String startDate, String endDate, String sortType, Boolean sortAsc, String assignorId);
 
-    Future<JsonArray> revoke(long badgeId);
+    /**
+     * revoke a badge
+     *
+     * @param userId
+     * @param badgeId
+     * @return
+     */
+    Future<JsonArray> revoke(String userId, long badgeId);
 }

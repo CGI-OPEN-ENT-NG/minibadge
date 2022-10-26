@@ -36,15 +36,15 @@ public class BadgeAssignedController extends ControllerHelper {
         this.badgeAssignedService = serviceFactory.badgeAssignedService();
     }
 
-    @Put("/revoked/given/:idBadge")
-    @ApiDoc("get all the badge the user has given")
+    @Put("/revoked/given/:badgeId")
+    @ApiDoc("revoke a badge the user has given")
+    @SecuredAction(value = "", type = ActionType.RESOURCE)
+    @ResourceFilter(ViewRight.class)
     public void revoke(HttpServerRequest request){
-        long idBadge = Long.parseLong(request.params().get(Database.IDBADGE));
-        badgeAssignedService.revoke(idBadge).onSuccess(event -> {
-            request.response().setStatusCode(200).end();
-        }).onFailure(error->{
-            badRequest(request, error.getMessage());
-        });
+        long idBadge = Long.parseLong(request.params().get(Database.BADGEID));
+        UserUtils.getUserInfos(eb, request, user ->  badgeAssignedService.revoke(user.getUserId(),idBadge)
+                .onSuccess(event -> request.response().setStatusCode(200).end())
+                .onFailure(error-> badRequest(request, error.getMessage())));
 
     }
 
