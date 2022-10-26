@@ -11,8 +11,6 @@ export interface IBadgeTypeResponse {
     label: string;
     description: string;
     createdAt?: string;
-    assignableBy?: string[];
-    level?: string;
     owner?: User;
     settings?: BadgeSettings[];
 }
