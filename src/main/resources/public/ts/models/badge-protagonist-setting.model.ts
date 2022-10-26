@@ -2,19 +2,19 @@ import {MinibadgeModel} from "./model";
 
 
 export interface IBadgeProtagonistSettingResponse {
-    type:string;
-    typeId :string;
+    type: string;
+    typeId: string;
 }
 
 
 export interface IBadgeProtagonistSettingRelationResponse {
-    assignorType:BadgeProtagonistSetting;
-    receiverType :BadgeProtagonistSetting;
+    assignorType: BadgeProtagonistSetting;
+    receiverType: BadgeProtagonistSetting;
 }
 
 export class BadgeProtagonistSettingRelation extends MinibadgeModel<BadgeProtagonistSettingRelation> {
-    assignorType:BadgeProtagonistSetting;
-    receiverType :BadgeProtagonistSetting;
+    assignorType: BadgeProtagonistSetting;
+    receiverType: BadgeProtagonistSetting;
 
     constructor(data?: IBadgeProtagonistSettingRelationResponse) {
         super();
@@ -22,8 +22,8 @@ export class BadgeProtagonistSettingRelation extends MinibadgeModel<BadgeProtago
     }
 
     build(data: IBadgeProtagonistSettingRelationResponse): BadgeProtagonistSettingRelation {
-        this.receiverType = data.receiverType;
-        this.assignorType = data.assignorType;
+        this.receiverType = new BadgeProtagonistSetting(<IBadgeProtagonistSettingResponse>data.receiverType);
+        this.assignorType = new BadgeProtagonistSetting(<IBadgeProtagonistSettingResponse>data.assignorType);
         return this;
     }
 
@@ -33,8 +33,8 @@ export class BadgeProtagonistSettingRelation extends MinibadgeModel<BadgeProtago
 }
 
 export class BadgeProtagonistSetting extends MinibadgeModel<BadgeProtagonistSetting> {
-    typeId:string;
-    type :string;
+    typeId: string;
+    type: string;
 
     constructor(data?: IBadgeProtagonistSettingResponse) {
         super();

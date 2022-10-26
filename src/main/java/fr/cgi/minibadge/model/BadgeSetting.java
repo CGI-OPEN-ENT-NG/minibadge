@@ -14,7 +14,7 @@ public class BadgeSetting implements Model<BadgeSetting> {
     List<BadgeProtagonistSettingRelation> relations = new ArrayList<>();
 
 
-    boolean is_self_assignable = false;
+    boolean is_self_assignable;
     String structureId;
 
     public BadgeSetting() {

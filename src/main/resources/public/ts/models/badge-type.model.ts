@@ -32,8 +32,6 @@ export class BadgeType extends MinibadgeModel<BadgeType> {
     label: string;
     description: string;
     createdAt?: string;
-    assignableBy?: string[];
-    level?: string;
     owner?: User;
     settings?: BadgeSettings[];
 
@@ -50,8 +48,6 @@ export class BadgeType extends MinibadgeModel<BadgeType> {
         this.label = data.label;
         this.description = data.description;
         this.createdAt = data.createdAt;
-        this.level = data.level;
-        this.assignableBy = data.assignableBy;
         this.owner = new User(<IUserResponse>data.owner);
         this.settings = data.settings;
         return this;
