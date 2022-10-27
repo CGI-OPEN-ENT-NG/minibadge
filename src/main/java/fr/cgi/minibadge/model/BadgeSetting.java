@@ -6,6 +6,7 @@ import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static fr.cgi.minibadge.core.constants.Database.STRUCTUREID;
 
@@ -51,8 +52,7 @@ public class BadgeSetting implements Model<BadgeSetting> {
 
     @Override
     public JsonObject toJson() {
-        JsonArray relationsList = new JsonArray();
-        relations.forEach(relation -> relationsList.add(relation.toJson()));
+        JsonArray relationsList = new JsonArray(relations.stream().map(BadgeProtagonistSettingRelation::toJson).collect(Collectors.toList()));
 
         return new JsonObject()
                 .put(Field.RELATIONS, relationsList)

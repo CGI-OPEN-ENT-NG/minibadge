@@ -27,9 +27,19 @@ export class BadgeProtagonistSettingRelation extends MinibadgeModel<BadgeProtago
         return this;
     }
 
+    static toModel(model: any): BadgeProtagonistSettingRelation {
+        return new BadgeProtagonistSettingRelation(model)
+    };
+
     toModel(model: any): BadgeProtagonistSettingRelation {
         return new BadgeProtagonistSettingRelation(model)
     };
+
+    static toList = (dataList: any[]): BadgeProtagonistSettingRelation[] => {
+        if (dataList)
+            return dataList.map((data: any) => BadgeProtagonistSettingRelation.toModel(data))
+        return [];
+    }
 }
 
 export class BadgeProtagonistSetting extends MinibadgeModel<BadgeProtagonistSetting> {

@@ -21,6 +21,7 @@ export class BadgeSettings extends MinibadgeModel<BadgeSettings> {
     build(data: IBadgeSettingResponse): BadgeSettings {
         this.isSelfAssignable = data.isSelfAssignable;
         this.structureId = data.structureId;
+        this.relations = BadgeProtagonistSettingRelation.toList(data.relations);
         return this;
     }
 

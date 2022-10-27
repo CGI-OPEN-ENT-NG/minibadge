@@ -113,8 +113,8 @@ public class BadgeType implements Model<BadgeType> {
                 .put(Field.PICTUREID, this.pictureId)
                 .put(Field.LABEL, this.label)
                 .put(Field.CREATEDAT, this.createdAt)
-                .put(Field.DESCRIPTION, this.description);
-        badgeType.put(Field.SETTING, this.setting.toJson());
+                .put(Field.DESCRIPTION, this.description)
+                .put(Field.SETTING, this.setting.toJson());
         if (this.owner != null)
             badgeType.put(Field.OWNER, this.owner.toJson());
 

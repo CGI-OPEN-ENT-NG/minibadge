@@ -1,7 +1,7 @@
 import {ILimitOffsetPayload, IPaginatedResponses} from "./request.model";
 import {IUserResponse, User} from "./user.model";
 import {MinibadgeModel} from "./model";
-import {BadgeSettings} from "./badge-settings.model";
+import {BadgeSettings, IBadgeSettingResponse} from "./badge-settings.model";
 
 export interface IBadgeTypeResponse {
     id?: number;
@@ -47,7 +47,7 @@ export class BadgeType extends MinibadgeModel<BadgeType> {
         this.description = data.description;
         this.createdAt = data.createdAt;
         this.owner = new User(<IUserResponse>data.owner);
-        this.setting = data.setting;
+        this.setting = new BadgeSettings(<IBadgeSettingResponse>data.setting);
         return this;
     }
 
