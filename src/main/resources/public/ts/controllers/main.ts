@@ -3,7 +3,7 @@ import {NAVBAR_VIEWS} from "../core/enum/navbar.enum";
 import {IChartService, ISettingService} from "../services";
 import {Setting} from "../models/setting.model";
 import {IScope} from "angular";
-import {Chart, IChartResponse} from "../models/chart.model";
+import {Chart} from "../models/chart.model";
 
 interface ViewModel {
     navbarViewSelected: NAVBAR_VIEWS;
@@ -48,8 +48,8 @@ class Controller implements ng.IController, ViewModel {
         });
     }
 
-    $onInit() {
-        Promise.all([this.getSettings(), this.chartService.getUserChart()])
+    async $onInit() {
+        await Promise.all([this.getSettings(), this.chartService.getUserChart()])
             .then((data: [Setting, Chart]) => {
                 let setting: Setting = data[0];
                 setting.userPermissions = data[1];
