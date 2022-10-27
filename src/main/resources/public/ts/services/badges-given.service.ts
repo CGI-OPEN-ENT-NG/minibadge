@@ -11,8 +11,8 @@ export interface IBadgesGivenService {
 
 
 export const badgesGivenService: IBadgesGivenService = {
-    revokeBadgeGiven:async (badgeGiven:BadgeAssigned) =>{
-        return  http.put(`/minibadge/revoked/given/${badgeGiven.id}`);
+    revokeBadgeGiven: async (badgeGiven: BadgeAssigned) => {
+        return http.put(`/minibadge/revoked/given/${badgeGiven.id}`);
     },
 
     /**
